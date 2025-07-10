@@ -14,9 +14,36 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShopApplication {
 
-	public static void main(String[] args) {
+    // 리턴타입 함수이름() {
+	static void 함수이름() {
+		// 코드~~
+        // 코드~~
+        // 코드~~
+		// return "ㅇ";
+	}
 
+    // 프로젝트 "shop" 시작시 프로그램 시작 지점 (main 메서드)
+	public static void main(String[] args) {
 		SpringApplication.run(ShopApplication.class, args);   // Spring boot로 만든 웹서버 띄우기
+		함수이름();
+
+		// String 변수명 = 값;
+        // String lover = "김말자";
+		// int age = 20;
+		// var lover = "김말자";
+        // final String lover = "김말자";
+		// var age = 20;
+        // System.out.println(lover);
+		// final int wifeCount = 1;
+		// System.out.println(wifeCount);
+
+		// if (3 > 1) {
+		//	 실행할코드~~
+		// }
+
+		// for (int i = 0; i < 3; i++) {
+		//	   실행할코드~~
+		// }
 	}
 
 }
