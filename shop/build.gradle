@@ -1,0 +1,49 @@
+// gradle 의미?
+// maven이 발전한 기능으로 아래와 같은 작업들을 되게 쉽게 알아서 해주는 작은 프로그램이 gradle 이다.
+// 1. 코드 짜고 나서 컴퓨터 친화적인 코드 변경
+// 2. 라이브러리 설치 및 관리
+// 3. 테스트 돌리기
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.7'          // Spring boot 버전
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.apple'          // 회사 이름
+version = '0.0.1-SNAPSHOT'   // 프로젝트 버전
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)   // 코드짤 때 사용할 자바 버전
+	}
+}
+
+repositories {
+	mavenCentral()   // 외부 라이브러리 가져올 곳
+}
+
+// 설치할 외부 라이브러리들
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// TODO: 아래와 같은 경고 메시지
+
+// 경고 메시지
+//C:\Users\bhjeon\.jdks\openjdk-24.0.1\bin\java.exe "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2023.3.4\lib\idea_rt.jar=58195:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2023.3.4\bin" -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath D:\minjae\JavaSpringBootStudy\shop\out\production\classes;D:\minjae\JavaSpringBootStudy\shop\out\production\resources;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot-starter-web\3.4.7\2503d2b8f42d32a9cd5047f058f54b19ce85d12c\spring-boot-starter-web-3.4.7.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot-starter-json\3.4.7\a8b693114856fe1f38beb6309f979c6f0f35fb7b\spring-boot-starter-json-3.4.7.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot-starter\3.4.7\d1f836ed5726c418c129e6f46211bb4f7331792a\spring-boot-starter-3.4.7.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot-starter-tomcat\3.4.7\92949aa525d85ee8b5755fe8ddeba94f7810bbd6\spring-boot-starter-tomcat-3.4.7.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-webmvc\6.2.8\a98cbaba4b55b4fee2d752041130e2e0f7014b27\spring-webmvc-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-web\6.2.8\7b6a4ffb12639779721bc5adbc7f5ba80db72ff9\spring-web-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.datatype\jackson-datatype-jsr310\2.18.4\3ef73abb0019203a8b626684edaa3e2c2c2def53\jackson-datatype-jsr310-2.18.4.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.module\jackson-module-parameter-names\2.18.4\6b4271bd98a68ad479fd4880ccd7b928680cdbb7\jackson-module-parameter-names-2.18.4.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.datatype\jackson-datatype-jdk8\2.18.4\15b878994d386379068978118718b4991b1b0e4c\jackson-datatype-jdk8-2.18.4.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-databind\2.18.4\7533a629c563ef6a5e2424d6ff3654155abea6b0\jackson-databind-2.18.4.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot-autoconfigure\3.4.7\b753bddca5836d9a35884b7a948c2ee924943d8a\spring-boot-autoconfigure-3.4.7.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot\3.4.7\47b55f46478b867975489c7223b6249aa5abe3be\spring-boot-3.4.7.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot-starter-logging\3.4.7\6f97fdec9b32d22764176c850a0a426c6987ea5b\spring-boot-starter-logging-3.4.7.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\jakarta.annotation\jakarta.annotation-api\2.1.1\48b9bda22b091b1f48b13af03fe36db3be6e1ae3\jakarta.annotation-api-2.1.1.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-core\6.2.8\2caf1cef93252f5ef2b7f334b8b4d61f3aecad15\spring-core-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.yaml\snakeyaml\2.3\936b36210e27320f920536f695cf1af210c44586\snakeyaml-2.3.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.apache.tomcat.embed\tomcat-embed-websocket\10.1.42\e47e420583a372feaece0dc9b8a9a63c4bfcd093\tomcat-embed-websocket-10.1.42.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.apache.tomcat.embed\tomcat-embed-core\10.1.42\8906a203edef16fa6013635925bf9f5d1dbe5639\tomcat-embed-core-10.1.42.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.apache.tomcat.embed\tomcat-embed-el\10.1.42\a82416ce2960c50ee8150c9229e058b826e070a8\tomcat-embed-el-10.1.42.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-context\6.2.8\9db99fe5f92f587e8f2b26b34a7f42260169925a\spring-context-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-aop\6.2.8\435fb310d5f464050b91ac3cb1a7f217a471e62e\spring-aop-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-beans\6.2.8\9da1e690f343c30b6ed6eabd5f60ecc5dd0b225a\spring-beans-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-expression\6.2.8\19e6618120fab6a572880675e1c0af676c7aa4ac\spring-expression-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\io.micrometer\micrometer-observation\1.14.8\335a6843ef73700d60873bc233d21679f46a7db4\micrometer-observation-1.14.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-annotations\2.18.4\21e5645ac25cd6c281cfc9e51df031055d26ffd6\jackson-annotations-2.18.4.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\com.fasterxml.jackson.core\jackson-core\2.18.4.1\3757427823c9f5ad6c7c7145598cfac2a13e03e0\jackson-core-2.18.4.1.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\ch.qos.logback\logback-classic\1.5.18\fc371f3fc97a639de2d67947cffb7518ec5e3d40\logback-classic-1.5.18.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-to-slf4j\2.24.3\da1143e2a2531ee1c2d90baa98eb50a28a39d5a7\log4j-to-slf4j-2.24.3.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.slf4j\jul-to-slf4j\2.0.17\524cb6ccc2b68a57604750e1ab8b13b5a786a6aa\jul-to-slf4j-2.0.17.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework\spring-jcl\6.2.8\b806d8d270a8eebaca56f6b4dae8f627460b0d4e\spring-jcl-6.2.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\io.micrometer\micrometer-commons\1.14.8\51baec7ebe61f1cd38db19b35e57ac248345cc5f\micrometer-commons-1.14.8.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\ch.qos.logback\logback-core\1.5.18\6c0375624f6f36b4e089e2488ba21334a11ef13f\logback-core-1.5.18.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.slf4j\slf4j-api\2.0.17\d9e58ac9c7779ba3bf8142aff6c830617a7fe60f\slf4j-api-2.0.17.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.apache.logging.log4j\log4j-api\2.24.3\b02c125db8b6d295adf72ae6e71af5d83bce2370\log4j-api-2.24.3.jar;C:\Users\bhjeon\.gradle\caches\modules-2\files-2.1\org.springframework.boot\spring-boot-devtools\3.4.7\15e977ebe184a678f45a368dfe0b1c2cc7cf0397\spring-boot-devtools-3.4.7.jar com.apple.shop.ShopApplication
+//WARNING: A restricted method in java.lang.System has been called
+//WARNING: java.lang.System::load has been called by com.intellij.rt.execution.application.AppMainV2 in an unnamed module (file:/C:/Program%20Files/JetBrains/IntelliJ%20IDEA%20Community%20Edition%202023.3.4/lib/idea_rt.jar)
+//WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+//WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+// 참고 URL - https://chatgpt.com/c/686f0a75-3a94-8010-b09f-04eccbde8a8e
+//tasks.withType(JavaExec).configureEach {
+//	jvmArgs += "--enable-native-access=ALL-UNNAMED"
+//}
