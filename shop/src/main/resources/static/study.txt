@@ -2,6 +2,15 @@
 Part 1
 1강 - Spring Boot 왜 쓰는데
 2강 - 개발환경 셋팅 / Spring Boot 3 프로젝트 생성
+
+* intellij community 에디터 설치 방법
+참고 URL - https://blog.naver.com/PostView.naver?blogId=djusti&logNo=223143383341
+참고 2 URL - https://priming.tistory.com/50
+
+* spring initializr 이용하여 프로젝트 생성
+참고 URL - https://start.spring.io/
+참고 2 URL - https://guns23.tistory.com/8
+
 3강 - 자바 기본 문법 1 (변수, 함수, if, for)
 
 
