@@ -6,6 +6,8 @@
 // 참고 URL - https://start.spring.io/
 // 참고 2 URL - https://guns23.tistory.com/8
 
+// 코드 수정 후 재컴파일 키보드 단축키 Ctrl + F9
+
 package com.apple.shop;
 
 import org.springframework.boot.SpringApplication;
@@ -25,7 +27,25 @@ public class ShopApplication {
     // 프로젝트 "shop" 시작시 프로그램 시작 지점 (main 메서드)
 	public static void main(String[] args) {
 		SpringApplication.run(ShopApplication.class, args);   // Spring boot로 만든 웹서버 띄우기
-		함수이름();
+
+		var test = new Friend("park");
+		System.out.println(test.name);
+
+		var test2 = new Friend("lee");
+		System.out.println(test2.name);
+
+		// new Friend("kim");
+        // new Friend().age;
+
+		// Test test = new Test();
+		// test.name = "dsfsd";
+
+		// var test = new Test();
+		// test.hello();
+
+		// System.out.println(test.name);
+
+		// 함수이름();
 
 		// String 변수명 = 값;
         // String lover = "김말자";
@@ -47,6 +67,30 @@ public class ShopApplication {
 	}
 
 }
+
+class Test {
+	String name = "kim";
+	void hello() {
+		System.out.println("안녕");
+	}
+}
+
+class Friend {
+	String name = "kim";
+	int age = 20;
+	// Friend(String a) {
+	//	   this.name = a;
+	// }
+	Friend(String 구멍) {
+		// this.name = "kim";  // this는 새로 생성될 object를 뜻함.  새로 생성될 object(this) 그 안의 name 변수에 "kim" 넣어주셈
+		this.name = 구멍;
+	}
+}
+
+//class Friend2 {
+//	String name = "park";
+//	int age = 20;
+//}
 
 //[코딩애플] 쉽게 배우는 Spring Boot & JPA
 //Part 1
