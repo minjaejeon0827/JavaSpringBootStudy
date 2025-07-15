@@ -11,6 +11,9 @@ Part 1
 참고 URL - https://start.spring.io/
 참고 2 URL - https://guns23.tistory.com/8
 
+* spring boot 공식 문서
+참고 URL - https://docs.spring.io/spring-boot/documentation.html
+
 3강 - 자바 기본 문법 1 (변수, 함수, if, for)
 4강 - 자바 기본 문법 2 (class, constructor)
 
@@ -381,3 +384,302 @@ class와 object를 많이 활용해서 개짓거리 하는걸 객체지향 프�
 4. field, attribute, method, instance라는 용어 배움
 
 1~2번은 자주 사용할 것이기 때문에 죽고싶지 않으면 이 정도는 외워두자.
+
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 1
+5강 - 웹서버와 웹페이지 만들기 (Controller)
+
+* 서버가 뭐냐면
+
+서버가 뭐냐면 그냥 유저가 데이터 요청하면 그 데이터 보내주는 따까리 같은 프로그램일 뿐이다.
+이거 해줘 그러면 진짜 그거 해주는 프로그램이 서버일 뿐임
+
+Q. 유튜브 서버가 뭐임?
+- 누가 동영상달라고 요청하면 동영상 보내주는 프로그램일 뿐이다.
+
+Q. 네이버 웹툰 서버가 뭐임?
+- 누가 웹툰달라고 요청하면 웹툰보내주는 프로그램일 뿐이다.
+
+Q. 웹서버는 뭐임?
+- 그냥 누가 웹페이지 달라고 하면 웹페이지 보내주는 서버일 뿐이다.
+
+그래서 서버개발이 어려운게 아니고
+누가 메인페이지달라고 하면 메인페이지 보내주고
+로그인페이지 달라고 하면 로그인페이지 보내주고
+그런 식으로 코드짜면 웹서버개발 끝이다.
+실은 글 저장 수정 삭제 이런것도 처리해주는 기능도 있을 수 있는데 이런 것들은 나중에 해보고
+이번 시간엔 간단하게 웹페이지 보내주는 서버와 그 기능부터 만들어보자.
+
+* 서버기능 만들려면 Controller
+
+일단 코드짜게 .java 파일을 아무데나 새로 만들어보자.
+BasicController.java 라고 맘대로 작명해봤다.
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class BasicController {
+
+}
+
+원래 .java 파일안엔 보통 파일명과 똑같은 클래스부터 넣고 시작해야하는데
+클래스는 에디터에서 알아서 생성해준다.
+여기다가 이제 서버기능만들면 된다.
+서버기능을 만들고 싶으면 아무 클래스에 @Controller 써놓고 시작하면 된다.
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class BasicController {
+    @GetMapping("/경로")
+    @ReponseBody
+    String hello(){
+        return "유저에게 보내줄데이터";
+    }
+}
+
+
+@GetMapping() 안에 페이지 경로 마음대로 적고
+@ResponseBody 쓰고
+return 오른쪽에 유저에게 보내줄 데이터를 적으면
+이제 /경로로 방문했을 때 그 데이터를 보내준다.
+참고로 골뱅이(@) 붙은걸 작성할 땐 엔터키 잘 쳐서 상단에서 import 해와야 동작한다.
+
+Q. 왜 그래야함?
+- Spring boot 프레임워크 사용법일 뿐이라 이렇게 쓸 뿐이다.
+골뱅이(@) 잘 넣으면 알아서 서버기능이 되도록 만들어놓은 프레임워크임
+심지어 골뱅이(@)만 잘 붙이면 main 함수에 안넣어도 알아서 제때 잘 실행해준다.
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class BasicController {
+    @GetMapping("/")
+    @ResponseBody
+    String hello(){
+        return "안녕하쇼";
+    }
+}
+
+그래서 저는 누가 / 메인페이지(@GetMapping("/"))로 접속했을 때
+"안녕하쇼"라고 유저에게 메세지를 보내는 기능을 만들어봤다.
+그래서 프로젝트 실행해본 다음에 브라우저켜서 localhost:8080으로 접속해보자.
+이게 여러분 / 메인페이지(@GetMapping("/"))인데 접속해보면 "안녕하쇼"가 잘 나오는군요.
+
+* 다른 페이지도 만들어보자
+
+다른 웹사이트들 보면 메인페이지 말고 다른 페이지도 많지 않습니까 예를 들면
+comic.naver.com/webtoon 으로 접속하면 요일웹툰 볼 수 있는 페이지를 보내주고
+comic.naver.com/challenge 로 접속하면 도전만화 페이지 보내주고요
+그런 식으로 URL을 다르게 입력하면 다른 페이지를 각각 보여준다.
+우리도 이런 식으로 다른페이지하나 만들어보자.
+예를 들면 누가 /about으로 접속하면 이 사이트 소개글같은거 보내주고 싶으면 어떻게해요?
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class BasicController {
+    @GetMapping("/")
+    @ResponseBody
+    String hello(){
+        return "안녕하쇼";
+    }
+
+    @GetMapping("/about")
+    @ResponseBody
+    String about_hello(){
+        return "피싱사이트에요";
+    }
+}
+
+새로운 서버 기능이 하나 필요할 때 마다 @GetMapping() 덩어리 복붙해서 쓰면 된다.
+    @GetMapping("/경로")
+    @ReponseBody
+    String hello(){
+        return "유저에게 보내줄데이터";
+    }
+
+Q. 누가 /mypage 이렇게 접속하면 "마이페이지입니다" 이런 문자를 보내주고 싶으면 어떻게 하죠?
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class BasicController {
+    @GetMapping("/")
+    @ResponseBody
+    String hello(){
+        return "안녕하쇼";
+    }
+
+    @GetMapping("/about")
+    @ResponseBody
+    String about_hello(){
+        return "피싱사이트에요";
+    }
+
+    @GetMapping("/mypage")
+    @ResponseBody
+    String mypage_hello(){
+        return "마이페이지입니다";
+    }
+}
+
+* html 보내기
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class BasicController {
+
+    @GetMapping("/")
+    @ResponseBody
+    String hello(){
+        return "<h4>안녕하쇼</h4>";
+    }
+
+//    @GetMapping("/")
+//    @ResponseBody
+//    String hello(){
+//        return "안녕하쇼";
+//    }
+
+    @GetMapping("/about")
+    @ResponseBody
+    String about_hello(){
+        return "피싱사이트에요";
+    }
+
+    @GetMapping("/mypage")
+    @ResponseBody
+    String mypage_hello(){
+        return "마이페이지입니다";
+    }
+}
+
+간단한 문자 말고 html을 보내고 싶으면 return 오른쪽에 html 적어도 된다.
+근데 보통은 보내고 싶은 html이 매우 긴 경우엔
+별도의 파일 만들어서 html 집어넣어두고 그 파일을 전송할 수도 있다.
+
+(resources/static/index.html)
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h4>메인페이지인데요</h4>
+</body>
+</html>
+
+html css js 파일들은 resources 폴더안의 static 폴더에 보관하면 된다.
+index.html 파일을 만들어서 위처럼 채워봤는데 ! 느낌표 입력하고 탭키 누르면 기본 양식이 자동완성된다.
+.html 파일은 그냥 html 담는 파일이고 html은 웹페이지 만들 때 쓰는 언어임
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class BasicController {
+
+    @GetMapping("/")
+    String hello(){
+        return "index.html";
+    }
+
+//    @GetMapping("/")
+//    @ResponseBody
+//    String hello(){
+//        return "<h4>안녕하쇼</h4>";
+//    }
+}
+
+유저에게 html 파일을 보내주고 싶으면 @ResponseBody 빼고 return 오른쪽에 "html파일경로" 적으면 된다.
+@ResponseBody 를 쓰면 return 오른쪽에 있는걸 (문자열, html 태그 등등...) 유저에게 보내라는 뜻이고 (return "<h4>안녕하쇼</h4>";)
+@ResponseBody 를 안쓰면 return 오른쪽에 있는 경로의 파일을 전송하라는 뜻이 됩니다. (return "index.html";)
+
+파일경로는 static 폴더가 기본이다.
+(예1) index.html - 기본 상위 폴더 경로가 static 폴더임
+(예1) test/test.html - 기본 상위 폴더 경로가 static 폴더 하위에 속한 test 폴더임
+
+오늘의 결론 :
+웹페이지 하나 보내주는 기능 만들고 싶으면
+@Controller 클래스 안에 함수하나 만들고 이거저거 채우면 만들 수 있다.
+
+오늘의 숙제 :
+누가 /date 로 접속하면 현재 날짜와 시간을 보내주는 기능을 만들어봅시다.
+http://localhost:8080/date로 접속시 날짜와 시간이 대충 아무렇게나 보이면 성공이다.
+굳이 HTML 말고 날짜 데이터만 보내줘도 된다.
+
+Q. 자바에서 오늘 날짜는 어떻게 알 수 있는데요?
+안배운건 검색해봐야지 생각한다고 나오는게 아님
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@Controller
+public class BasicController {
+
+    @GetMapping("/")
+    String hello(){
+        return "index.html";
+    }
+
+    @GetMapping("/about")
+    @ResponseBody
+    String about_hello(){
+        return "피싱사이트에요";
+    }
+
+    @GetMapping("/mypage")
+    @ResponseBody
+    String mypage_hello(){
+        return "마이페이지입니다";
+    }
+
+    @GetMapping("/date")
+    @ResponseBody
+    String date(){
+        // 현재 날짜와 시간 구하기
+//       return LocalDateTime.now().toString();
+        return ZonedDateTime.now().toString();
+
+        // TODO: 현재 날짜와 시간 구하기 (2025.07.15 minjae)
+        // 참고 URL - https://greenyellow-s.tistory.com/30
+//        Date date = new Date();
+//        SimpleDateFormat sdf = new SimpleDateFormat("y년 MM월 dd일 H시 m분 s초");
+//        return sdf.format(date);
+    }
+}
+
+LocalDateTime.now().toString() 아니면 ZonedDateTime.now().toString() 이런거 쓰면
+현재 시간을 문자형태로 출력해볼 수 있다고 하는군요.
+그래서 /date 접속시 보내라고 해봤더니 진짜 /date 접속시 보임
+

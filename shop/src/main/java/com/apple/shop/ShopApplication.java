@@ -28,11 +28,11 @@ public class ShopApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ShopApplication.class, args);   // Spring boot로 만든 웹서버 띄우기
 
-		var test = new Friend("park");
-		System.out.println(test.name);
+		// var test = new Friend("park");
+		// System.out.println(test.name);
 
-		var test2 = new Friend("lee");
-		System.out.println(test2.name);
+		// var test2 = new Friend("lee");
+		// System.out.println(test2.name);
 
 		// new Friend("kim");
         // new Friend().age;
