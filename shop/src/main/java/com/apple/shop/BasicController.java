@@ -9,12 +9,15 @@ import java.time.ZonedDateTime;
 public class BasicController {
     // 여기서 웹서버기능 제작가능
 
-    @GetMapping("/")
+    // 웹서버 API
+    @GetMapping("/")   // 1. URL("/")로 HTTP - GET method 요청 날리면
 // @ResponseBody   // html 파일(index.html)을 유저 웹브라우저로 전송하고 싶으면 @ResponseBody를 빼줘야 함.
     String hello(){
+        // 2. html 파일("index.html")을 유저에게 보내주세요.
         return "index.html";   // index.html 기본 상위 폴더 경로가 static 폴더임
     }
 
+// 웹서버 API
 //    @GetMapping("/")
 //    @ResponseBody
 //    String hello(){
@@ -22,30 +25,36 @@ public class BasicController {
 //        return "<h4>안녕하쇼</h4>";
 //    }
 
+// 웹서버 API
 //    @GetMapping("/")
 //    @ResponseBody
 //    String hello(){
 //        return "안녕하쇼";
 //    }
 
+    // 웹서버 API
     @GetMapping("/test")
 // @ResponseBody   // html 파일(test.html)을 유저 웹브라우저로 전송하고 싶으면 @ResponseBody를 빼줘야 함.
     String test(){
         return "test/test.html";   // test.html 기본 상위 폴더 경로가 static 폴더 하위에 속한 test 폴더임
     }
 
-    @GetMapping("/about")
+    // 웹서버 API
+    @GetMapping("/about")   // 1. URL("/about")로 HTTP - GET method 요청 날리면
     @ResponseBody
     String about(){
+        // 2. 문자열("피싱사이트에요")을 유저에게 보내주세요.
         return "피싱사이트에요";
     }
 
+    // 웹서버 API
     @GetMapping("/mypage")
     @ResponseBody
     String mypage(){
         return "마이페이지입니다";
     }
 
+    // 웹서버 API
     @GetMapping("/date")
     @ResponseBody
     String date(){
@@ -60,7 +69,7 @@ public class BasicController {
 //        return sdf.format(date);
     }
 
-    // 컨트롤러 메서드 작성 예시
+// 웹서버 API 작성 예시
 //    @GetMapping("/경로")
 //    @ReponseBody
 //    String hello(){
