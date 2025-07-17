@@ -841,3 +841,166 @@ instagram.com/explore/tags/food 이건 무슨 데이터를 보내줄 것 같습�
 한 눈에 딱 보이고 깔끔하군요.
 
 그래서 이런 식으로 깔끔하게 만드는게 좋으니 앞으로 웹서버 API에서 URL 작명할 때 한번 쯤 생각해보자.
+
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 1
+7강 - 상품목록 페이지 만들기 (Thymeleaf)
+
+쇼핑몰을 만든다고 했는데
+가장 중요한 '상품목록 보여주는 페이지'부터 하나 만들어보자.
+누가 /list로 접속하면 list.html 같은 페이지를 하나 전송해주면 될 것 같군요.
+그 안엔 상품들을 집어넣고요.
+
+* list.html 보내주는 기능을 만들어보자
+
+(ItemController.java)
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller   // @Controller 사용하면 springframework가 알아서 아래 코드(public class ItemController { ... }) 가져와서 ShopApplication 클래스 main 함수에 집어 넣어서 아래 웹서버 코드 실행
+public class ItemController {
+    // 여기서 웹서버기능 제작가능
+
+    // 웹서버 API
+    @GetMapping("/list")
+    String list(){
+        return "list.html";
+    }
+
+}
+
+그래서 파일(ItemController.java) 하나 새로 만들어서 웹서버 API를 만들어봤다.
+- 상품과 관련된 웹서버 API들을 한 곳에 모아놓으려고 새로 파일(ItemController.java) 만들어봤다.
+- 아무 클래스(예 - ItemController)에 @Controller 붙이면 웹서버 API들을 해당 클래스(예 - ItemController) 안에 만들 수 있다.
+- 원래 파일(ItemController.java) 상단에 package 파일경로; 라고 적어줘야 다른 파일에서도 해당 파일(ItemController.java)에 있는 코드를 사용가능하다.
+
+(list.html)
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+  <div>
+    <img>
+    <h4>바지</h4>
+    <p>7억</p>
+  </div>
+  <div>
+    <img>
+    <h4>셔츠</h4>
+    <p>8억</p>
+  </div>
+
+</body>
+</html>
+
+list.html 파일도 만들어서 상품들을 채워봤다.
+그럼 진짜로 /list 방문시 html 보이나 테스트해보자.
+
+* 매번 다른 상품 보내줘야하는거 아님?
+
+근데 이러면 접속할 때 마다 항상 같은 내용의 html 페이지만 보내주는거 아닙니까?
+쇼핑몰은 맨날 다른 상품명이랑 가격을 보내야하는거 아님?
+그러고 싶으면 템플릿 엔진이라는걸 사용한다.
+
+템플릿 엔진은 웹서버의 데이터를 html에 집어넣어주는걸 도와주는 외부 라이브러리이다.
+여러가지 템플릿 엔진들이 있는데 우리는 Thymeleaf 템플릿 엔진을 사용해보도록 하자.
+
+(build.gradle)
+// 설치할 외부 라이브러리들
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+위처럼 build.gradle 파일에 속한 항목 "dependencies"에 차이점(implementation 'org.springframework.boot:spring-boot-starter-thymeleaf')만 잘 붙여넣고
+Load Gradle Changes 버튼누르면 외부 라이브러리 설치가 가능하다.
+외부 라이브러리 설치했으면 웹서버 중지했다가 재시작해야 잘 적용된다.
+
+* build.gradle 파일에서 외부 라이브러리 설치 방법 (Load Gradle Changes 버튼 클릭)
+참고 URL - https://dawitblog.tistory.com/30
+
+이제 html 파일을 templates 폴더(폴더 경로 - "D:\minjae\JavaSpringBootStudy\shop\src\main\resources\templates") 안에 만들어야
+Thymeleaf 문법(Thymeleaf 템플릿 엔진 외부 라이브러리 설치해야 사용 가능한 문법.)으로 html을 만들 수 있다.
+Thymeleaf 써도 기존 html 파일이랑 똑같이 작성하고 사용할 수 있는데
+html 곳곳에 Thymeleaf 문법(Thymeleaf 템플릿 엔진 외부 라이브러리 설치해야 사용 가능한 문법.)으로 웹서버데이터를 집어넣을 수 있다는게 차이점이다.
+(Node.js 웹서버의 ejs 문법과 비슷한 기능이다.)
+
+* Thymeleaf로 웹서버데이터 html에 박아서 보내주려면
+
+이제 웹서버에서 특정 html 파일에 웹서버의 데이터를 집어넣을 수 있는데 어떻게 하냐면
+1. 웹서버 API 함수의 파라미터에 Model model 넣고
+2. 웹서버 API안에서 model.addAttribute("작명", 전송할데이터); 코드 추가
+3. html 파일 안에서 구현한 html 태그에 th:text="${작명}" 코드 추가
+이런거 차례로 쓰면 된다.
+
+package com.apple.shop;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller   // @Controller 사용하면 springframework가 알아서 아래 코드(public class ItemController { ... }) 가져와서 ShopApplication 클래스 main 함수에 집어 넣어서 아래 웹서버 코드 실행
+public class ItemController {
+    // 여기서 웹서버기능 제작가능
+
+    // 웹서버 API
+    @GetMapping("/list")
+    String list(Model model) {
+        model.addAttribute("name", "홍길동");
+        return "list.html";
+    }
+
+}
+
+1. 웹서버 API 함수의 파라미터에 Model model 넣고
+2. model.addAttribute("작명", 전송할데이터); 쓰면 된다.
+그럼 앞으로 list.html에서 name이라고 사용하면 "홍길동"이 출력된다.
+
+(list.html)
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+  <div>
+    <img>
+<!--    <h4>바지</h4>  -->
+    <h4 th:text="${name}">바지</h4>
+    <p>7억</p>
+  </div>
+  <div>
+    <img>
+    <h4>셔츠</h4>
+    <p>8억</p>
+  </div>
+
+</body>
+</html>
+
+3. html 태그(<h4 th:text="${name}">바지</h4>)에 th:text="${작명}"(예 - th:text="${name}") 이라고 써야 웹서버에서 보낸 데이터 출력이 가능하다.
+그래서 위 html을 유저에게 전송할 땐 앞으로 <h4>태그에 "홍길동"이 박혀서 전송된다.
+Thymeleaf 문법(Thymeleaf 템플릿 엔진 외부 라이브러리 설치해야 사용 가능한 문법.)을 사용하고 싶으면
+templates 폴더(폴더 경로 - "D:\minjae\JavaSpringBootStudy\shop\src\main\resources\templates")로 html 파일을 옮겨야 잘 동작한다.
+/list 페이지 방문해서 진짜인지 실험해봅시다.
+
+지금은 가짜 임시 데이터들을 html에 박아서 보여주고 있는데
+다음 시간부터 데이터베이스를 하나 만들어서 거기 있던 데이터를 뽑아서 보내주는 방법을 알아보자.

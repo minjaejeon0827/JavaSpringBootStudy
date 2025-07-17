@@ -13,8 +13,12 @@ public class BasicController {
     @GetMapping("/")   // 1. URL("/")로 HTTP - GET method 요청 날리면
 // @ResponseBody   // html 파일(index.html)을 유저 웹브라우저로 전송하고 싶으면 @ResponseBody를 빼줘야 함.
     String hello(){
+//        Thymeleaf 문법(Thymeleaf 템플릿 엔진 외부 라이브러리 설치해야 사용 가능한 문법.)을 사용하고 싶으면
+//        index.html 기본 상위 폴더 경로를
+//        (기존) static 폴더 
+//        (변경) templates 폴더(폴더 경로 - "D:\minjae\JavaSpringBootStudy\shop\src\main\resources\templates")로 html 파일을 옮겨야 잘 동작한다.
         // 2. html 파일("index.html")을 유저에게 보내주세요.
-        return "index.html";   // index.html 기본 상위 폴더 경로가 static 폴더임
+        return "index.html";   // index.html 기본 상위 폴더 경로 (기존) static 폴더 -> (변경) templates 폴더
     }
 
 // 웹서버 API

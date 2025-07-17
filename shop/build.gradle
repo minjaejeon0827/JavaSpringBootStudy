@@ -1,4 +1,4 @@
-// gradle 의미?
+// gradle 역할?
 // maven이 발전한 기능으로 아래와 같은 작업들을 되게 쉽게 알아서 해주는 작은 프로그램이 gradle 이다.
 // 1. 코드 짜고 나서 컴퓨터 친화적인 코드 변경
 // 2. 라이브러리 설치 및 관리
@@ -14,21 +14,28 @@ group = 'com.apple'          // 회사 이름
 version = '0.0.1-SNAPSHOT'   // 프로젝트 버전
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)   // 코드짤 때 사용할 자바 버전
-	}
+	sourceCompatibility = '17'
+
+//	toolchain {
+//		// TODO: JDK 버전(languageVersion) (기존) JavaLanguageVersion.of(17) -> (변경) JavaLanguageVersion.of(24) 구현 (2025.07.17 minjae)
+//		// 참고 URL - https://chatgpt.com/c/687851fa-fb58-8010-aba9-0f5b9f49f122
+//		// 참고 2 URL - https://chatgpt.com/c/68784c26-e758-8010-a50e-d4e6a77cdfe6
+////		languageVersion = JavaLanguageVersion.of(17)   // 코드짤 때 사용할 자바 버전(프로젝트 컴파일 시 사용할 JDK 버전(jdk17) (Gradle이 자동 설치 가능))
+//		languageVersion = JavaLanguageVersion.of(24)   // 코드짤 때 사용할 자바 버전(프로젝트 컴파일 시 사용할 JDK 버전(openjdk-24.0.1) (Gradle이 자동 설치 가능))
+//	}
 }
 
 repositories {
 	mavenCentral()   // 외부 라이브러리 가져올 곳
 }
 
-// 설치할 외부 라이브러리들
+// 설치된 외부 라이브러리들 관리 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'  // thymeleaf 외부 라이브러리 설치
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
