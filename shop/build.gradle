@@ -48,7 +48,8 @@ tasks.named('test') {
 //해결 방법: VM 옵션에 --enable-native-access=ALL-UNNAMED 추가
 //1. IntelliJ에서:
 //Run → Edit Configurations로 이동
-//실행하는 어플리케이션 설정에서 VM options 항목에 아래 추가:
+//실행하는 어플리케이션 설정(ShopApplication) 화면 우측 항목 "Build and run" 옆 버튼 "Modify options" 클릭
+//-> "Add VM options" 클릭 -> VM options 입력하는 항목에 아래 추가:
 //--enable-native-access=ALL-UNNAMED
 //
 //2. Gradle로 실행한다면, build.gradle 또는 CLI에서 JVM 옵션 추가:

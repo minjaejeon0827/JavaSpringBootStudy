@@ -7,11 +7,25 @@
 // 참고 2 URL - https://guns23.tistory.com/8
 
 // 코드 수정 후 재컴파일 키보드 단축키 Ctrl + F9
+// 디버그 터미널 출력창 키보드 단축키 Alt + 4 / Alt + 5 둘 중 하나 입력
 
 package com.apple.shop;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+// SpringBoot는 내부적으로 아파치 톰캣(Apache Tomcat) 웹서버 엔진을 이용하며 기본적으로 8080 포트에 띄워준다.
+// 아래 URL 주소로 웹페이지 열면 아래와 같은 404 페이지가 뜨는 이유는 WebApplication.java 소스파일에서 내부적으로 코드를 짜서 개발하지 않았기 때문이다.
+// http://localhost:8080/
+// Whitelabel Error Page
+// This application has no explicit mapping for /error, so you are seeing this as a fallback.
+// Tue Jul 22 08:34:49 KST 2025
+// There was an unexpected error (type=Not Found, status=404).
+
+// 포트(Port)란 내 컴퓨터에 다른 사람들이 접속할 수 있게 만든 구멍이다.
+// 컴퓨터 하나당 포트(Port)는 약 2만개 있다.
+// (예) 내 컴퓨터에 다른 사람들이 접속할 수 있게 포트(Port) 8080 만들어 놓고
+//      다른 사람들이 포트(Port) 8080으로 접속해면 내 컴퓨터에서 웹페이지 보내주면 그게 웹서버이다.
 
 @SpringBootApplication
 public class ShopApplication {
@@ -126,3 +140,108 @@ class Friend {
 //Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 //You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
 //For more on this, please refer to https://docs.gradle.org/8.14.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+
+
+
+
+// * intellij community 에디터 설치 방법
+// 참고 URL - https://blog.naver.com/PostView.naver?blogId=djusti&logNo=223143383341
+// 참고 2 URL - https://priming.tistory.com/50
+
+// * spring initializr 이용하여 프로젝트 생성
+// 참고 URL - https://start.spring.io/
+// 참고 2 URL - https://guns23.tistory.com/8
+
+// 코드 수정 후 재컴파일 키보드 단축키 Ctrl + F9
+// 디버그 터미널 출력창 키보드 단축키 Alt + 4 / Alt + 5 둘 중 하나 입력
+
+// *** 자바 공식문서 읽는 방법 ***
+//참고 URL - https://opentutorials.org/course/3930/26665
+//참고 2 URL - https://doodreamcode.tistory.com/115
+//참고 3 URL - https://isaac-christian.tistory.com/entry/Java-official-document-%ED%99%9C%EC%9A%A9
+
+// 자바 공식문서 웹사이트 목록
+// 참고 URL - https://velog.io/@dev-mage/java-official-documents-list
+//Java Documentation
+//참고 URL - Java Platform, Standard Edition Documentation - Releases
+//		  https://docs.oracle.com/en/java/javase/index.html
+
+//Java 업데이트 정리
+//참고 URL - Java Language Updates
+//		https://docs.oracle.com/en/java/javase/18/language/java-language-changes.html#GUID-6459681C-6881-45D8-B0DB-395D1BD6DB9B
+
+//Java 언어, JVM 명세
+//참고 URL - Java SE Specifications
+//		https://docs.oracle.com/javase/specs/
+
+//	- Java 18(최신) JVM 개요
+//	참고 URL - Java Virtual Machine Guide
+//			https://docs.oracle.com/en/java/javase/18/vm/java-virtual-machine-technology-overview.html
+
+//JDK 릴리즈 노트
+//참고 URL - JDK Release Notes
+//		https://www.oracle.com/java/technologies/javase/jdk-relnotes-index.html
+
+//	- JDK 18 도구 명세
+//	참고 URL - Java Development Kit Version 18 Tool Specifications
+//			https://docs.oracle.com/en/java/javase/18/docs/specs/man/index.html
+
+//	- Modular JDK(Project Jigsaw: 직소 프로젝트) - Java 9에서 도입된 모듈화 시스템
+//	참고 URL - Project Jigsaw
+//			https://openjdk.org/projects/jigsaw/
+
+//*** Java API 명세 ***
+//	- Java 8
+//	참고 URL - Java Platform SE 8
+//		https://docs.oracle.com/javase/8/docs/api/
+//
+//	- Java 19(최신)
+//	참고 URL - Overview (Java SE 19 & JDK 19 [build 6])
+//		https://download.java.net/java/early_access/loom/docs/api/
+
+//Java 개발자 센터
+//참고 URL - Dev.java: The Destination for Java Developers
+//		https://dev.java/
+
+//Java 튜토리얼
+//참고 URL - Learn Java - Dev.java
+//		https://dev.java/learn/
+
+//Java 플랫폼 개요
+//참고 URL - Java™ Platform Overview
+//		https://docs.oracle.com/javase/8/docs/technotes/guides/index.html#langutil
+
+//Java 튜토리얼(Java 8을 기준으로 제작됨)
+//참고 URL - The Java™ Tutorials
+//		https://docs.oracle.com/javase/tutorial/index.html
+
+//Java 소개
+//	간략 소개
+//	참고 URL - About the Java Technology
+//		https://docs.oracle.com/javase/tutorial/getStarted/intro/definition.html
+//
+//	1996년에 발표된 공식 보고서 - 첫 출시 즈음이라 그런지 C, C++과 비교하여 작성된 내용이 많음
+//	참고 URL - The Java Language Environment: Contents
+//		https://www.oracle.com/java/technologies/language-environment.html
+//
+//	Java 공식 보고서 목록
+//	참고 URL - Java SE Reference White Papers
+//		https://www.oracle.com/java/technologies/javase/javase-whitepapers.html
+
+//Java 필수 개념 소개
+//참고 URL - Trail: Learning the Java Language
+//		https://docs.oracle.com/javase/tutorial/java/index.html
+//
+//Java 8 개발자 가이드
+//참고 URL - Java Platform Standard Edition 8 Documentation
+//		https://docs.oracle.com/javase/8/docs/
+
+//Java 8 도구와 유틸리티 설명
+//참고 URL - JDK Development Tools
+//		https://docs.oracle.com/javase/8/docs/technotes/tools/index.html#general
+
+//Java 8 런처(JDK의 java 실행 파일)가 실행되는 간략한 과정
+//참고 URL - How Classes are Found
+//		https://docs.oracle.com/javase/8/docs/technotes/tools/findingclasses.html
+

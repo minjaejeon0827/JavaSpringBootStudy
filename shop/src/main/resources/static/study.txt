@@ -10,6 +10,7 @@ Part 1
 * spring initializr 이용하여 프로젝트 생성
 참고 URL - https://start.spring.io/
 참고 2 URL - https://guns23.tistory.com/8
+참고 3 URL - https://nohriter.tistory.com/115
 
 * spring boot 공식 문서
 참고 URL - https://docs.spring.io/spring-boot/documentation.html
