@@ -9,7 +9,7 @@
 // 코드 수정 후 재컴파일 키보드 단축키 Ctrl + F9
 // 디버그 터미널 출력창 키보드 단축키 Alt + 4 / Alt + 5 둘 중 하나 입력
 
-package com.apple.shop;
+package com.apple.shop;   // 파일 상단에 package 파일경로;(com 폴더 -> apple 폴더 -> shop 폴더) 라고 적어줘야 다른 파일에서도 여기 있던 코드를 사용가능하다.
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,6 +28,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //      다른 사람들이 포트(Port) 8080으로 접속해면 내 컴퓨터에서 웹페이지 보내주면 그게 웹서버이다.
 
 @SpringBootApplication
+// 접근 제어자 "public" 없으면 같은 폴더(패키지) 안에서만 해당 클래스 사용가능
+// 접근 제어자 "public" 붙이면 다른 폴더(패키지) 에서도 해당 클래스 사용 가능
 public class ShopApplication {
 
     // 리턴타입 함수이름() {
@@ -82,6 +84,8 @@ public class ShopApplication {
 
 }
 
+// 접근 제어자 "public" 없으면 같은 폴더(패키지) 안에서만 해당 클래스 사용가능
+// 접근 제어자 "public" 붙이면 다른 폴더(패키지) 에서도 해당 클래스 사용 가능
 class Test {
 	String name = "kim";
 	void hello() {
@@ -89,6 +93,8 @@ class Test {
 	}
 }
 
+// 접근 제어자 "public" 없으면 같은 폴더(패키지) 안에서만 해당 클래스 사용가능
+// 접근 제어자 "public" 붙이면 다른 폴더(패키지) 에서도 해당 클래스 사용 가능
 class Friend {
 	String name = "kim";
 	int age = 20;

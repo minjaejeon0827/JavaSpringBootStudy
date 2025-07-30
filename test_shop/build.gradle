@@ -1,11 +1,8 @@
-// gradle 역할?
+// gradle 의미?
 // maven이 발전한 기능으로 아래와 같은 작업들을 되게 쉽게 알아서 해주는 작은 프로그램이 gradle 이다.
 // 1. 코드 짜고 나서 컴퓨터 친화적인 코드 변경
 // 2. 라이브러리 설치 및 관리
 // 3. 테스트 돌리기
-
-// thymeleaf 템플릿 엔진 역할?
-// thymeleaf 템플릿 엔진은 웹서버의 데이터를 html에 집어넣어주는걸 도와주는 외부 라이브러리이다.
 
 plugins {
 	id 'java'
@@ -17,28 +14,22 @@ group = 'com.apple'          // 회사 이름
 version = '0.0.1-SNAPSHOT'   // 프로젝트 버전
 
 java {
-	sourceCompatibility = '17'
-
-//	toolchain {
-//		// TODO: JDK 버전(languageVersion) (기존) JavaLanguageVersion.of(17) -> (변경) JavaLanguageVersion.of(24) 구현 (2025.07.17 minjae)
-//		// 참고 URL - https://chatgpt.com/c/687851fa-fb58-8010-aba9-0f5b9f49f122
-//		// 참고 2 URL - https://chatgpt.com/c/68784c26-e758-8010-a50e-d4e6a77cdfe6
-////		languageVersion = JavaLanguageVersion.of(17)   // 코드짤 때 사용할 자바 버전(프로젝트 컴파일 시 사용할 JDK 버전(jdk17) (Gradle이 자동 설치 가능))
-//		languageVersion = JavaLanguageVersion.of(24)   // 코드짤 때 사용할 자바 버전(프로젝트 컴파일 시 사용할 JDK 버전(openjdk-24.0.1) (Gradle이 자동 설치 가능))
-//	}
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)   // 코드짤 때 사용할 자바 버전
+	}
 }
 
 repositories {
 	mavenCentral()   // 외부 라이브러리 가져올 곳
 }
 
-// 설치된 외부 라이브러리들 관리 
+// 설치할 외부 라이브러리들
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'  // thymeleaf 외부 라이브러리 설치
+//	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
@@ -51,8 +42,7 @@ tasks.named('test') {
 //해결 방법: VM 옵션에 --enable-native-access=ALL-UNNAMED 추가
 //1. IntelliJ에서:
 //Run → Edit Configurations로 이동
-//실행하는 어플리케이션 설정(ShopApplication) 화면 우측 항목 "Build and run" 옆 버튼 "Modify options" 클릭
-//-> "Add VM options" 클릭 -> VM options 입력하는 항목에 아래 추가:
+//실행하는 어플리케이션 설정에서 VM options 항목에 아래 추가:
 //--enable-native-access=ALL-UNNAMED
 //
 //2. Gradle로 실행한다면, build.gradle 또는 CLI에서 JVM 옵션 추가:
