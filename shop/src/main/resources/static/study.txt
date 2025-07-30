@@ -1087,6 +1087,7 @@ Azure 웹사이트 URL 주소는 portal.azure.com인데 마이크로소프트 �
 털리면 코딩인생 끝나는 것임
 
 DB 접속용
+Host URL 주소: codingapplemysql0827.mysql.database.azure.com
 아이디: codingapple
 비번: qwer1234!
 
