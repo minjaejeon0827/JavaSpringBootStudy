@@ -1127,6 +1127,9 @@ DBeaver 검색해서 설치하면 아마 상단에 데이터베이스 연결 버
 DBeaver 설치 방법
 유튜브 참고 URL - https://youtu.be/7YEd8ECUTAk?si=Se90Wik0TuTMoX1w
 
+DBeaver SQL 편집기 텍스트 작성시 영어 대문자 자동 적용 방법
+참고 URL - https://jin2rang.tistory.com/entry/DBeaver-%EB%8C%80%EB%AC%B8%EC%9E%90-%EB%B3%80%ED%99%98-%EC%9E%90%EB%8F%99-%EB%8C%80%EB%AC%B8%EC%9E%90
+
 Host 란에는 호스팅받은 데이터베이스 주소나 URL같은걸 Azure에서 가져와서 집어넣고
 Username, Password 란에는 DB 접속용 아이디/비번 만든거 집어넣자.
 그리고 연결눌러보면 여러분 데이터베이스에 접속해서 데이터를 구경할 수 있다.
