@@ -12,7 +12,7 @@ public class ItemController {
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     @GetMapping("/list")
     String list(Model model) {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
-        model.addAttribute("name", "홍길동");  // html 파일에 보내고 싶은 웹서버데이터 이름 "name", 값 "홍길동" 메서드 addAttribute 사용해서 집어넣기
+        model.addAttribute("name", "비싼 바지");  // html 파일에 보내고 싶은 웹서버데이터 이름 "name", 값 "비싼 바지" 메서드 addAttribute 사용해서 집어넣기
         return "list.html";
     }
 
