@@ -1260,5 +1260,9 @@ Connection string 복붙할 때 패스워드 넣는 부분이 있으면 넣어�
 - 아니면 MySQL의 경우엔 application.properties 파일에 주소 기재할 때 엔드포인트주소:3306/데이터베이스이름 이렇게 붙여야 잘될 수 있음
 - application.properties 문자들 마지막에 이상한 공백같은거 있으면 안됨
 
+* IntelliJ application.properties 한글 깨짐 해결 방법
+참고 URL - https://velog.io/@ashappyasikonw/IntelliJ-properties-%ED%95%9C%EA%B8%80-%EC%84%A4%EC%A0%95-%ED%95%9C%EA%B8%80-%EA%B9%A8%EC%A7%90
+참고 2 URL - https://www.inflearn.com/community/questions/1154446/%ED%95%9C%EA%B8%80-%EA%B9%A8%EC%A7%90-%ED%98%84%EC%83%81?srsltid=AfmBOorb4ayZpoyMxG7d8Uuz-rt0WRZTYutwGJxmCSdAfwz9MJIdk1xg
 
-
+* SourceTree 사용 시 한글 깨짐 해결 방법
+참고 URL - https://begindevelop.tistory.com/86
