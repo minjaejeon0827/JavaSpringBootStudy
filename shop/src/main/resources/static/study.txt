@@ -1461,3 +1461,232 @@ insert into item values (3, '자켓', 6000);
 - 글의 id, 제목, 날짜를 저장할 컬럼이 필요하다. 날짜는 아무 형식이나 상관없다.
 - @Entity를 활용해서 만들어오자.
 - 날짜는 Date 이런 타입으로 넣으면 되긴 하는데 찾아봐도 모르겠으면 그냥 문자로 넣어도 봐드림
+
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 1
+11강 - DB 데이터 출력하려면
+
+* 잠깐 Lombok 설치
+
+오늘 수업 진행하기 전에 라이브러리 하나만 설치하고 지나가자.
+Lombok인데 필요한 코드를 자동으로 생성해줘서 자바 코드 양을 매우 줄여주는 간단한 라이브러리이다.
+왜 쓰냐면 오늘 코드가 살짝 길어질텐데 코드 좀 짧게 짜려고 쓰는것임
+그리고 실제로도 생산성이 워낙 좋아지기 때문에 안쓰는 곳이 거의 없다.
+
+(build.gradle 파일)
+
+dependencies {
+  compileOnly 'org.projectlombok:lombok'   // 코드 자동생성 라이브러리 (필요한 코드를 자동으로 생성해줘서 자바 코드 양을 매우 줄여주는 간단한 라이브러리이다.)
+  annotationProcessor 'org.projectlombok:lombok'
+}
+
+build.gradle 파일에 위와 같이 추가하고 버튼 "load gradle changes" 누르고 서버 재시작하면 설치 끝이다.
+그리고 에디터 셋팅이 좀 필요하다.
+1. 에디터 좌측 상단메뉴에 햄버거 버튼 클릭 - 파일 - Settings - Plugin 메뉴 들어가서 Lombok이라는 플러그인도 설치해야하고
+2. 에디터 좌측 상단메뉴에 햄버거 버튼 클릭 - 파일 - Settings 메뉴에서 annotation processor 검색해서 "Enable annotation processing" 체크해둬야 쓸 수 있다.
+
+참고사항 - 외부 라이브러리 설치, Lombok이라는 플러그인 설치, annotation processor 검색해서 "Enable annotation processing" 체크한 후에
+          웹서버 종료 후 다시 실행 해야함.
+
+* DB 데이터 출력
+
+지금은 상품목록 웹페이지 가보면 임시데이터들을 html에 집어넣고 있는데
+진짜 쇼핑몰처럼 DB에 있던거 꺼내서 여기 박아넣어보도록 하자.
+
+html에 데이터 꽂는 법은 저번에 알아봤고
+테이블에서 데이터 꺼내는 법만 알면 될 것 같은데
+테이블에서 데이터 입출력하려면 항상 3-step 이 필요하다.
+
+1. repository라는걸 만들고
+2. DB입출력 원하는 클래스에서 repository를 등록하고
+3. DB입출력문법 가져다가 쓰면 된다.
+
+* 1. Repository interface 만들기
+
+일단 Entity 만든 소스파일(예 - Item.java, Notice.java) 옆에 .java 파일부터 하나 만들어줘야한다.
+근데 이번엔 class 말고 interface를 만들어볼 것임
+
+Google Gemini 사용자 질문 - "java spring boot 프레임워크에서 JpaRepository와 CrudRepository의 각각의 기능과 차이점에 대해 구체적으로 알려줘."
+참고 URL - https://gemini.google.com/app/16d012e8f5315f5a
+
+public interface 작명 extends JpaRepository<Entity명, id컬럼타입> {
+
+}
+
+- 파일명은 관습적으로 데이터 입출력할 Entity이름 + Repository라고 뒤에 붙여서 짓고
+- 그 안에 public interface를 만들고
+- <> 안에는 데이터 입출력할 Entity 이름과 그 Entity에 있던 id 컬럼의 타입(자료형 - Long, Integer 등등...)을 넣어주자.
+
+(Item.java)
+
+package com.apple.shop;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ItemRepository extends JpaRepository<Item, Long> {
+
+}
+
+그래서 전 이렇게 해봤음
+
+Q. 왜 이렇게 써야함?
+- JPA & Hibernate 만든 사람이 이렇게 쓰래요.
+그냥 라이브러리 사용법이기 때문에 복붙해서 쓰면 끝이다.
+
+이건 실은 클래스가 아니라 interface라는건데
+근데 interface를 만들면 신기하게도 같은 이름을 가진 클래스(class ItemRepository)를 컴퓨터가 자동으로 생성해준다.
+그 클래스 안에는 DB 데이터 입출력 도와주는 함수들이 개많이 들어있구요
+그래서 그거 가져다쓰면 데이터 입출력할 수 있는 것임
+
+이제 new ItemRepository() 하면 거기에 DB 데이터 입출력 함수들이 들어있어서 꺼내서 쓰면 된다.
+근데 실은 직접 new ItemRepository() 이렇게 쓰진 않고 특별한 문법을 가져다가 쓴다.
+
+* 2. DB입출력 원하는 클래스에서 repository를 등록하고
+
+(Lombok 문법 사용 예시 - ItemController.java)
+
+@Controller
+@RequiredArgsConstructor
+public class ItemController {
+  private final ItemRepository itemRepository;
+
+  (API들 ~~)
+}
+
+Item 테이블에서 데이터 입출력하고 싶은 클래스(예 - ItemController)가 있으면
+해당 클래스(예 - ItemController) 안에 변수(private final ItemRepository itemRepository;)를 아무 이름으로 하나 만들어준다.
+
+- 근데 타입(자료형)을 아까만든 repository 이름(ItemRepository)으로 하자.
+- 해당 클래스(예 - ItemController) 위에다가 @RequiredArgsConstructor 라는 것도 추가해야하는데 Lombok 문법이다.
+- private final 붙여야 잘된다.
+
+그럼 앞으로 해당 변수(private final ItemRepository itemRepository;) 안에 DB 데이터 입출력 함수가 가득 들어있으니 그걸 자유롭게 사용하면 된다.
+
+(Lombok 문법 사용 안하고 코드 작성한 예시 - ItemController.java)
+
+@Controller
+public class ItemController {
+  private final ItemRepository itemRepository;
+
+  @Autowired
+  ItemController(ItemRepository itemRepository) {
+    this.itemRepository = itemRepository;
+  }
+
+  (API들 ~~)
+}
+
+(참고) Lombok문법 쓰기 싫고 쌩으로 코드짜고 싶으면 위처럼 코드짜면 된다.
+constructor(생성자 - ItemController)를 직접 적으면 되는데 귀찮으면 @RequiredArgsConstructor 라는 Lombok 문법쓰면
+그 constructor(생성자 - ItemController)를 자동으로 생성해주기 때문에 안써도 되는 것이다.
+
+이게 뭔지 간략하게만 설명하자면 그냥 스프링한테 "니가 알아서 object(객체) 하나 뽑으라고" 시키는것이다.
+그럼 착한 스프링은 new ItemRepository() 해서 object(객체) 생성 후 변수(private final ItemRepository itemRepository;)에 쳐넣어준다.
+그래서 위의 itemRepository 변수(private final ItemRepository itemRepository;)엔 new ItemRepository() 이런게 들어있고
+앞으로 new ItemRepository()가 필요할 때 변수(private final ItemRepository itemRepository;)를 맘대로 사용하면 된다.
+이런 식으로 쓰는걸 dependency injection이라고 하는데 자세한건 나중에 알아보자.
+
+* 3. DB 입출력 문법 사용하기
+
+(Lombok 문법 사용 예시 - ItemController.java)
+
+@Controller
+@RequiredArgsConstructor
+public class ItemController {
+  private final ItemRepository itemRepository;
+
+  (API들 ~~)
+}
+
+(Lombok 문법 사용 안하고 코드 작성한 예시 - ItemController.java)
+
+@Controller
+public class ItemController {
+  private final ItemRepository itemRepository;
+
+  @Autowired
+  ItemController(ItemRepository itemRepository) {
+    this.itemRepository = itemRepository;
+  }
+
+  (API들 ~~)
+}
+
+위처럼 등록한 변수(private final ItemRepository itemRepository;)엔 DB 데이터 입출력 함수(예 - findAll(), save() 등등...)들이 들어있기 때문에 점찍어서 맘대로 사용하면 된다.
+등록한변수.findAll() 이러면 테이블에 저장된 데이터를 다 가져와준다.
+등록한변수.save() 이러면 테이블에 데이터 저장도 가능하다.
+
+var result = itemRepository.findAll();
+
+진짜 테이블에 저장된 데이터들 가져오나 API 아무데서나 이런거 한 번 써보고 결과도 출력해보자.
+
+▲ 제 테이블(DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블)에는 행이 3개 있는데 그걸 다 가져와주는군요.
+(DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 데이터)
+| id | price | title |
+|1	 |7000	 |셔츠    |
+|2	 |5000	 |바지    |
+|3	 |6000	 |자켓    |
+
+[ ] 이런건 List 자료형인데 거기에 다 쳐박아서 가져오는군요.
+(ShopApplication Console창 출력 결과 - List 자료형 [ ]도 같이 출력)
+Hibernate: select i1_0.id,i1_0.price,i1_0.title from item i1_0
+[com.apple.shop.Item@467e6d30, com.apple.shop.Item@515fd3bd, com.apple.shop.Item@4728dfc]  // List 자료형 [ ] 출력
+데이터 com.apple.shop.Item@467e6d30, com.apple.shop.Item@515fd3bd, com.apple.shop.Item@4728dfc 의미 - Item 클래스의 Object 라는 뜻이다
+
+
+* List 자료형
+
+여러개의 문자나 숫자를 한 변수에 쑤셔넣고 싶으면 List 안에 쑤셔박을 수 있다.
+List는 여러 종류가 있는데 보통 ArrayList를 많이 사용한다.
+
+(ArrayList 사용 예시1)
+var a = new ArrayList<>();
+a.add(30);
+a.add(40);
+System.out.println(a);
+System.out.println(a.get(0));
+
+ArrayList 하나 만들고 싶으면 이렇게 코드짜면 된다.
+- 위에서 ArrayList 라는거 import 잘 해와야 사용가능함
+- ArrayList에는 .add() 라고 쓰면 안에다가 자료(데이터)를 입력(추가)할 수 있다.
+- 자료(데이터)를 특정한 한개만 출력하려면 .get(순서 - 인덱스 의미) 입력하면 된다.
+자료(데이터)가 ArrayList에 저장 잘 되어있는지 API 아무데나 적어서 코드를 실행시켜보자.
+
+이게 사용법 끝임 여러 자료(데이터)를 한 객체(변수)에 쑤셔박고 싶을 때 사용하자.
+
+(ArrayList 사용 예시2)
+List<Integer> a = new ArrayList<>();
+a.add(30);
+a.add(40);
+System.out.println(a);
+
+var 말고 좀 더 정확히 변수의 타입(자료형)을 기재하고 싶으면 ArrayList<> 타입(자료형)(또는 List<>) 넣으면 된다.
+<> 안에는 리스트에 넣을 자료들의 타입을 기재할 수 있다.
+위 처럼 작성하면 Integer만 넣을 수 있는 리스트 객체(변수)(List<Integer> a = new ArrayList<>();)가 된다.
+
+(참고1) 문자와 숫자 등 여러종류 타입(자료형)을 동시에 넣고 싶으면 Object라고 집어넣어보자. (List<Object> b = new ArrayList<>();)
+(참고2) 참고로 왼쪽에 타입(자료형)을 List<어쩌구> 대신 ArrayList<어쩌구>로 기재할 수도 있다.
+
+근데 왜 List<어쩌구> 썼는데
+근데 왜 List<어쩌구> 썼냐면
+원래 ArrayList랑 비슷한 타입이 몇개 있다. LinkedList 이런것도 있구요
+그런것들의 상위 타입이 List이다.
+그래서 List로 넣어버리면 나중에 맘대로 ArrayList, LinkedList로 필요할 때 바꾸는게 쉬워서 이렇게 쓰는 경우가 많다.
+실은 그런 경우 거의 없고 List가 더 짧고 간결해보이니까 쓰는 것임
+
+* 그래서 테이블의 한 행을 출력하려면
+
+List<Item> result = itemRepository.findAll();
+System.out.println(result.get(0))
+System.out.println(result.get(0).title)
+
+이러면 List 객체(변수) result 안에 들어있던 여러 행 중에 0번째 행(result.get(0))을 가져오고
+그 중에 .title 컬럼(result.get(0).title)도 출력해볼 수 있다.
+심심해서 List 객체(변수) result에 타입(자료형)도 정확히 "Item"으로 집어넣어봤다. (List<Item> result = itemRepository.findAll();)
+var 자리에 타입(자료형)을 뭘 적을지 모르겠으면 var 타입(자료형)으로 선언한 변수에 마우스 올려보자.
+
+
+
+
+
+
+
