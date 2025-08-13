@@ -1684,9 +1684,181 @@ System.out.println(result.get(0).title)
 심심해서 List 객체(변수) result에 타입(자료형)도 정확히 "Item"으로 집어넣어봤다. (List<Item> result = itemRepository.findAll();)
 var 자리에 타입(자료형)을 뭘 적을지 모르겠으면 var 타입(자료형)으로 선언한 변수에 마우스 올려보자.
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 1
+12강 - HTML에 서버데이터 넣으려면
 
+실은 근데 여러분들이 만드는게 서버에서 데이터만 보내주는 REST API 같은걸 만들고 있으면
+"DB에 있던 데이터 뽑아서 유저에게 보내주세요~" 라고 코드짜면 끝이다.
+근데 그건 초딩도 할 수 있는 것이고
+진정한 남자라면 html까지 만들어서 보내주는 완전한 웹서비스를 만들 줄 알아야한다.
+html에 DB 데이터를 꽂아서 보내줘보자.
 
+* 상품목록페이지 디자인 넣기
 
+지금 근데 /list 웹페이지(ItemController.java -> ItemController class -> @GetMapping("/list") -> list.html) 디자인이 좀 쓰레기같아서
+이쁘게 좀 바꿔보도록 하자.
+
+상품목록 레이아웃 디자인
+
+<div class="card">
+  <img src="https://placehold.co/300">
+  <div>
+    <h4 th:text="${name}">바지</h4>
+    <p>7억</p>
+  </div>
+</div>
+.card {
+ margin: 30px auto;
+ display: flex;
+}
+.card img {
+ width: 150px;
+ margin-right: 20px;
+}
+
+css처럼 생긴건 .css 파일 안에 넣고 html 파일에 <link>태그로 첨부하면 되는데
+static 폴더에 main.css 같은 파일 하나 만들고
+
+html파일 상단에 <link href=”/main.css” rel=”stylesheet”> 집어넣으면 css를 적용할 수 있습니다.
+
+* Thymeleaf th:each 반복문
+
+드디어 DB에서 뽑은 데이터를 html 파일(list.html)에 집어넣어보자.
+
+(ItemController.java)
+
+@GetMapping("/list")
+String list(Model model){
+  List<Item> result = itemRepository.findAll();
+  model.addAttribute("items", result);
+
+  return "list.html"
+}
+
+model.addAttribute() 쓰면 서버데이터를 html에 박을 수 있다고 했으니까
+DB에서 뽑은 모든 행을 박아봤다.
+result 변수는 List자료인데 그런 것도 서버에서보낸변수 "items"로 박을 수 있음
+
+(list.html)
+
+<div class="card">
+  <img src="https://placehold.co/300">
+  <div>
+    <h4 th:text="${items.get(0).title}">바지</h4>
+    <p>7억</p>
+  </div>
+</div>
+<div class="card">
+  <img src="https://placehold.co/300">
+  <div>
+    <h4 th:text="${items.get(1).title}">바지</h4>
+    <p>7억</p>
+  </div>
+</div>
+
+그럼 html 파일에서 첫 상품, 둘 째 상품의 title컬럼을 출력하려면 이렇게 하면 되겠군요.
+근데 상품이 100개 들어있으면 어쩔 것임
+이거 html 덩어리도 100번씩 복붙해야겠네요?
+그러면 되는데 귀찮으면 html을 반복문으로 반복생성할 수도 있다.
+Thymeleaf의 th:each 라는 반복문을 쓰면 된다.
+
+(list.html)
+
+<div class="card" th:each="작명: ${items}">
+  <img src="https://placehold.co/300">
+  <div>
+    <h4 th:text="${items.get(0).title}">바지</h4>
+    <p>7억</p>
+  </div>
+</div>
+
+1. 반복생성하고 싶은 html 덩어리에 th:each를 붙이고
+2. 안에 작명 : ${서버에서보낸변수} (예) ${items} 이런걸 채워준다.
+그럼 ${서버에서보낸변수} (예) ${items}에 담긴 자료 갯수만큼 html 덩어리를 복붙해준다.
+
+(list.html)
+
+<div class="card" th:each="i : ${items}">
+  <img src="https://placehold.co/300">
+  <div>
+    <h4 th:text="${i.title}">바지</h4>
+    <p>7억</p>
+  </div>
+</div>
+
+그리고 하나의 기능이 더 있는데
+th:each 쓰면 ${서버에서보낸변수} (예) ${items}에 있던 List 안의 자료들을 꺼내서 작명한 변수 (예) i 에 넣어준다.
+진짠지 출력해보자.
+
+작명한 변수 (예) i 출력하고 싶으면 언제나 th:text 쓰면 되고 ${} 안에 변수명 (예) ${i.title} 적으면 된다.
+진짜인지 테스트해보자.
+
+* object 출력 편하게 하려면 @ToString
+
+집가기 전에 롬복(Lombok) 라이브러리 사용법이나 더 알아보자.
+object 쓰다보면 가장 불편한 점이 이건데
+object.변수명 이런건 출력하면 잘나오지만
+object 자체는 출력해봤자 com.apple.shop.Item@어쩌구 이런 식으로만 출력된다.
+
+(예) (ShopApplication Console창 출력 결과 - List 자료형 [ ]도 같이 출력)
+    Hibernate: select i1_0.id,i1_0.price,i1_0.title from item i1_0
+    [com.apple.shop.Item@467e6d30, com.apple.shop.Item@515fd3bd, com.apple.shop.Item@4728dfc]  // List 자료형 [ ] 출력
+    데이터 com.apple.shop.Item@467e6d30, com.apple.shop.Item@515fd3bd, com.apple.shop.Item@4728dfc 의미 - Item 클래스의 Object 라는 뜻이다
+
+그래서 간혹 object에 속한 모든 변수를 한 번에 편하게 출력하고 싶으면 어떻게하게요?
+쉬운 방법은 없다.
+대신 여러분이 직접 "object에 속한 모든 변수를 한 번에 출력해주는 함수" 이런걸 구현하면 된다.
+
+@Entity
+public class Item {
+  public Long id;
+  public String title;
+  public Integer price;
+
+  public String toString(){
+    return this.title + this.price;
+  }
+}
+
+예를 들어 Item 클래스에 toString() 같은 함수 만들어두고
+그 친구는 위에 있던 모든 변수(public Long id; public String title; public Integer price;)같은걸 출력해달라고 하면 되는 것이다.
+그럼 앞으로 Item @Entity 클래스 object에다가 .toString() 붙이면 그 자리에 모든 변수가 출력되겠군요.
+여러분은 개발자니까 이런거 만드는거에 거부감 느끼면 안 된다.
+
+@Entity
+@ToString
+public class Item {
+  public Long id;
+  public String title;
+  public Integer price;
+
+}
+
+하지만 거부감 느끼는 사람도 개발자 할 수 있는 세상인데
+@ToString 붙이면 .toString() 역할의 함수를 알아서 만들어준다.
+롬복(Lombok) 라이브러리 덕분이다.
+
+(예) .toString() 함수 사용해서 Item @Entity 클래스 object 출력 예시
+Item(id=null, title=null, price=null)
+
+▲ 그럼 앞으로 Item @Entity 클래스의 object들을 출력할 때 .toString() 함수 붙여서 출력하면 이런 식으로 모든 변수(id=null, title=null, price=null)가 출력된다.
+에구편해
+
+오늘의 결론 :
+1. th:each 반복문을 쓰면 html 반복생성이 가능하다.
+2. 서버에서 List 자료같은걸 보내면 th:each 반복문으로 List 안에 있던 내용 하나하나 출력도 가능하다.
+3. object에 속한 모든 변수들을 한번에 출력쉽게하고 싶으면 클래스에 @ToString 붙여두자.
+
+오늘의 숙제 :
+|id  |글제목                  |날짜            |
+|1   |이번 주 할인이벤트합니다   |2030년 1월 2일   |
+|2   |입금자명 제발 쓰세요      |2030년 1월 2일   |
+|3   |소비자브랜드상 수상       |2030년 1월 2일   |
+
+전전 강의 숙제로 이런 테이블을 하나 만들어봤다.
+이 테이블에서 글을 뽑아서 보여주는 HTML 페이지를 하나 만들어보자.
+앞으로 글이 많을 것이 분명하니 th:each 반복문을 써보도록 하자.
 
 
 

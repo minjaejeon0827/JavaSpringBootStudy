@@ -9,23 +9,54 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link href="/main.css" rel="stylesheet">   <!-- 상대경로를 / 부터 시작하면(href="/main.css") static 폴더에 속한 파일들 접근 및 사용가능 -->
 </head>
 <body>
 
-  <div>
-    <img>
-    <!--  <h4>바지</h4>  -->
-    <!--  Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터(ItemController.java -> model.addAttribute("name", "비싼 바지");)를 list.html 파일에 박아서 화면 출력 -->
-    <!--  <h4> 태그안의 문자열('바지')이 변수 name(th:text="${name}")에 저장된 값(문자열 - "비싼 바지")으로 바뀌어서 화면 출력  -->
-    <!--  아래 th:text에서 th는 Thymeleaf의 약자 이다.  -->
-    <h4 th:text="${name}">바지</h4>
-    <p>7억</p>
+  <div class="card" th:each="i: ${items}">
+    <img src="https://placehold.co/300">
+    <div>
+      <h4 th:text="${i.title}">바지</h4>
+      <!--  <h4 th:text="${items.get(0).title}">바지</h4>  -->  <!--  첫 상품의 title 꺼내주는 코드 th:text="${items.get(0).title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리  -->
+      <!--  <h4 th:text="${items[0].title}">바지</h4>  -->  <!--  첫 상품의 title 꺼내주는 코드 th:text="${items[0].title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리  -->
+      <!--  <p>7억</p>  -->
+      <p th:text="${i.price}">7억</p>
+    </div>
   </div>
-  <div>
-    <img>
-    <h4>셔츠</h4>
-    <p>8억</p>
-  </div>
+
+<!--  TODO: 아래 주석친 코드 필요시 참고(2025.08.13 minjae)  -->
+<!--  <div class="card">-->
+<!--      <img src="https://placehold.co/300">-->
+<!--      <div>-->
+<!--          <h4 th:text="${items.get(0).title}">바지</h4>   &lt;!&ndash;  th:text="${items.get(0).title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리 &ndash;&gt;-->
+<!--          &lt;!&ndash;  <h4 th:text="${items[0].title}">바지</h4>  &ndash;&gt;  &lt;!&ndash;  th:text="${items[0].title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리 &ndash;&gt;-->
+<!--          &lt;!&ndash;  <p>7억</p>  &ndash;&gt;-->
+<!--          <p th:text="${items.get(0).price}">7억</p>-->
+<!--      </div>-->
+<!--  </div>-->
+<!--  <div class="card">-->
+<!--      <img src="https://placehold.co/300">-->
+<!--      <div>-->
+<!--          <h4 th:text="${items.get(1).title}">바지</h4>   &lt;!&ndash;  th:text="${items.get(1).title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리 &ndash;&gt;-->
+<!--          &lt;!&ndash;  <h4 th:text="${items[1].title}">바지</h4>  &ndash;&gt;  &lt;!&ndash;  th:text="${items[1].title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리 &ndash;&gt;-->
+<!--          &lt;!&ndash;  <p>7억</p>  &ndash;&gt;-->
+<!--          <p>7억</p>-->
+<!--      </div>-->
+<!--  </div>-->
+<!--  <div>-->
+<!--    <img>-->
+<!--    &lt;!&ndash;  <h4>바지</h4>  &ndash;&gt;-->
+<!--    &lt;!&ndash;  Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터(ItemController.java -> model.addAttribute("name", "비싼 바지");)를 list.html 파일에 박아서 화면 출력 &ndash;&gt;-->
+<!--    &lt;!&ndash;  <h4> 태그안의 문자열('바지')이 변수 name(th:text="${name}")에 저장된 값(문자열 - "비싼 바지")으로 바뀌어서 화면 출력  &ndash;&gt;-->
+<!--    &lt;!&ndash;  아래 th:text에서 th는 Thymeleaf의 약자 이다.  &ndash;&gt;-->
+<!--    <h4 th:text="${name}">바지</h4>-->
+<!--    <p>7억</p>-->
+<!--  </div>-->
+<!--  <div>-->
+<!--    <img>-->
+<!--    <h4>셔츠</h4>-->
+<!--    <p>8억</p>-->
+<!--  </div>-->
 
 </body>
 </html>

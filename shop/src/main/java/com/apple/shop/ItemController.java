@@ -39,10 +39,24 @@ public class ItemController {
 
         // var result = itemRepository.findAll();   // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
         List<Item> result = itemRepository.findAll();   // 데이터 출력 중인 테이블 클래스 "Item"으로 List 타입(자료형) 명확하게 해서 DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
-        System.out.println(result);
-        System.out.println(result.get(0));  // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 첫째 행(get(0)) 데이터 출력 (데이터 com.apple.shop.Item@6d17b11e 출력 - Item 클래스의 Object 라는 뜻이다.)
-        System.out.println(result.get(0).price);  // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 첫째 행(get(0)) 가격(price) 데이터 출력
-        System.out.println(result.get(0).title);  // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 첫째 행(get(0)) 제목(title) 데이터 출력
+
+        model.addAttribute("items", result);   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "items" , 값 result 메서드 addAttribute 사용해서 집어넣기
+        // model.addAttribute("name", "비싼 바지");  // html 파일에 보내고 싶은 웹서버데이터 이름 "name", 값 "비싼 바지" 메서드 addAttribute 사용해서 집어넣기
+
+        var a = new Item();
+        System.out.println(a);  // 참고 - System.out.println(a); 처럼 .toString() 함수 생략하고 실행하더라도 Item @Entity 클래스 안에 속하는 .toString() 함수가 알아서 붙여서 해당 함수를 실행해줌.
+        System.out.println(a.title);
+        System.out.println(a.toString()); // Item.java 소스파일 -> 롬복(Lombok) 라이브러리 @ToString 사용하면 해당 Item @Entity 클래스 안에 속하는 .toString() 역할의 함수를 알아서 만들어준다.
+        // (예) 위에 .toString() 함수 사용해서 Item @Entity 클래스 object 출력 예시
+        // Item(id=null, title=null, price=null)
+
+        return "list.html";
+
+        // TODO: 아래 주석친 테스트 코드 필요시 참고 (2025.08.13 minjae)
+        // System.out.println(result);
+        // System.out.println(result.get(0));  // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 첫째 행(get(0)) 데이터 출력 (데이터 com.apple.shop.Item@6d17b11e 출력 - Item 클래스의 Object 라는 뜻이다.)
+        // System.out.println(result.get(0).price);  // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 첫째 행(get(0)) 가격(price) 데이터 출력
+        // System.out.println(result.get(0).title);  // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 첫째 행(get(0)) 제목(title) 데이터 출력
         // itemRepository.save();   // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 데이터 저장해주세요~
         // JPA 사용해서 테이블에서 데이터 입출력하려면
         // 아래처럼 항상 3-step 이 필요하다.
@@ -53,15 +67,12 @@ public class ItemController {
         // var a = new ArrayList<>();
         // ArrayList<Object> a = new ArrayList<>();  // 문자와 숫자 등 여러종류 타입(자료형)을 동시에 넣기 (또는 List<Object> b = new ArrayList<>();)
         // ArrayList<String> a = new ArrayList<>();  // 문자열 타입(자료형)
-        ArrayList<Integer> a = new ArrayList<>();    // 정수형 타입(자료형)
-        a.add(30);
-        a.add(40);
-        System.out.println(a);
-        System.out.println(a.get(0));
-        System.out.println(a.get(1));
-
-        model.addAttribute("name", "비싼 바지");  // html 파일에 보내고 싶은 웹서버데이터 이름 "name", 값 "비싼 바지" 메서드 addAttribute 사용해서 집어넣기
-        return "list.html";
+        // ArrayList<Integer> a = new ArrayList<>();    // 정수형 타입(자료형)
+        // a.add(30);
+        // a.add(40);
+        // System.out.println(a);
+        // System.out.println(a.get(0));
+        // System.out.println(a.get(1));
     }
 
     // 웹서버 API 작성 예시
