@@ -10,6 +10,12 @@ import java.util.*;
 //import java.util.List;
 
 
+// *** 웹서버 기능 개발 순서 *** (추후 필요시 기능 개발 순서 변동 가능)
+// 1. @Entity Item.java 구현   // @Entity(독립체 or 테이블 의미) 붙이면 "Item" 이름으로 DBeaver - MySQL - 데이터베이스 'Shop'에 데이터 테이블 하나 생성해줌
+// 2. interface ItemRepository.java 구현
+// 3. @Controller ItemController.java 구현
+// 4. html 파일 list.html 구현
+
 @Controller   // @Controller 사용하면 springframework가 알아서 아래 코드(public class ItemController { ... }) 가져와서 ShopApplication 클래스 main 함수에 집어 넣어서 아래 웹서버 코드 실행
 @RequiredArgsConstructor   // Lombok 문법 @RequiredArgsConstructor 사용
 // 접근 제어자 "public" 없으면 같은 폴더(패키지) 안에서만 해당 클래스 사용가능
