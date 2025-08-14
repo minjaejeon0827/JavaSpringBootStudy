@@ -1865,3 +1865,252 @@ Item(id=null, title=null, price=null)
 그리고 .findAll()로 뽑은 데이터는 List 자료형일텐데
 그걸 html에 보낼 경우 th:each 반복문으로 쉽게 출력가능하다.
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 1
+13강 - public private protected static (access modifiers)
+
+오늘은 재미없는 자바 기본 문법 몇 개 알아보고 지나가자.
+기능구현이랑 별 상관없고 코드관리를 도와주는 문법들이다.
+
+* public 키워드
+
+@Entity
+public class Item {
+  public String title;
+  public Integer price;
+}
+
+(다른 클래스)
+
+Item item = new Item();
+item.title = "바보"; //사용가능
+
+클래스에 변수랑 함수 만들어둘 때
+public을 붙일 수 있는데 그럼 이 변수와 함수는 모든 곳에서 가져다쓸 수 있다는 뜻이다.
+이제 앞으로 아무 클래스에서나 .title을 출력하고 수정하고 그럴 수 있다.
+
+* package private (접근제한자 아무것도 안붙이는 경우)
+
+@Entity
+public class Item {
+  String title;
+  Integer price;
+}
+
+(같은 폴더의 클래스)
+
+Item item = new Item();
+item.title = "바보"; //사용가능
+
+클래스에 변수랑 함수 만들어둘 때
+아무것도 안붙이면 package private이라고 해서
+같은 폴더 안에 있는 클래스들만 이 변수, 함수를 쓸 수 있다.
+남의 말 그대로 믿지말고 다른 폴더에선 사용불가능한지 테스트해보자.
+
+* private
+
+@Entity
+public class Item {
+  private String title;
+  private Integer price;
+}
+
+(다른 클래스)
+
+Item item = new Item();
+item.title = "바보"; //불가능
+
+클래스 (예) Item 에 변수랑 함수 만들어둘 때
+private을 붙이면 다른 클래스에서 사용이 금지된다.
+이 클래스 (예) Item 안에서만 변수랑 함수를 가져다쓸 수 있다.
+클래스 바깥에서 함부로 이 변수랑 함수를 건드리지 않게 하고 싶으면 씁니다.
+
+* protected
+
+@Entity
+public class Item {
+  protected String title;
+  protected Integer price;
+}
+
+(같은 폴더의 클래스)
+
+Item item = new Item();
+item.title = "바보"; //사용가능
+
+(extends 사용해서 상속받는 클래스)
+class 클래스1 extends Item {
+
+}
+
+protected를 붙이면 그냥 같은 폴더의 클래스에선 자유롭게 가져다가 사용가능하지만
+다른 폴더로 가면 사용 불가능하다.
+아까 아무것도 안붙이던거랑 동작방식이 똑같음 (package private (접근제한자 아무것도 안붙이는 경우))
+
+하지만 이 클래스를 상속 받은 클래스가 있다면 그 친구는 어디있어도 맘대로 쓸 수 있다.
+protected를 붙인 원래 클래스를 복사해서 비슷하게 생긴 클래스를 하나 더 만들 수 있다.
+extends를 쓰면 복사가 가능한데 그걸 상속이라고 멋있게 부른다.
+
+하지만 상속이라는 것을 옛날에 객체지향 개념이 처음 나왔을 땐 좋다고 많이 사용했었는데
+요즘은 기피하는 사람들이 많다. (왜냐하면 상속을 많이 사용하면 소스코드 복잡해져서 싫어함. 하여 요즘은 상속보다 composition(조합) 이런거 좋아함.)
+그래서 protected도 쓸 이유가 딱히 자연스럽게 없어졌다.
+
+결론은 클래스에 변수랑 함수 만들 때 왼쪽을 비워두는 것 보다는
+그냥 변수를 다른데서 못쓰게 만들고 싶으면 private 붙여놓고
+다른데서 맘대로 쓰게 만들고 싶으면 public 붙여두자.
+
+* static
+
+@Entity
+public class Item {
+  public static String title;
+  public static Integer price;
+}
+
+(다른 클래스)
+
+Item.title //이렇게 사용가능
+
+그리고 마지막으로 static 키워드도 붙일 수 있는데
+이걸 붙이면 new 키워드로 object 안뽑고
+클래스명에다가 점찍어서 바로 꺼내서 쓸 수 있는 변수, 함수를 만들 수 있다.
+
+이러면 클래스에서 변수랑 함수를 복사해서 쓰는 것의 장점을 버리겠다는 소리라서
+일반적인 상황에선 쓰지 않고 많은 곳에서 부담없이 쓸 수 있는 유틸리티용 함수같은거 만들 때 가끔 쓴다.
+나중에 써보자.
+
+* private 붙은 변수 수정하기
+
+사람들이 private 쓰면 안전하다고 좋아한다.
+그래서 그걸 많이 보게 될텐데 근데 private 붙여놓으면 출력조차 되지 않는다.
+그럼 private 붙여놓은 변수들을 나중에 변경하고 출력하고 그러고 싶으면 어쩌냐고요?
+"private 변수 출력해주는 함수"
+"private 변수 수정해주는 함수"
+이런걸 미리 만들어두고 그걸 가져다가 쓰면 된다.
+
+@Entity
+public class Item {
+  private String title;
+  private Integer price;
+
+  public String getTitle(){
+    return title;
+  }
+}
+
+예를 들어 private 붙은 title 변수를 나중에 출력하고 싶어요?
+그럼 출력해주는 함수 getTitle()를 하나 이렇게 만들어둡니다.
+그리고 얘는 title 변수를 그 자리에 뱉으라고 해두면 되는 것임 (return title;)
+이제 앞으로 title 변수를 출력하고 싶으면 .getTitle() 이러면 된다.
+
+@Entity
+public class Item {
+  private String title;
+  private Integer price;
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+}
+
+예를 들어 private 붙은 title 변수를 나중에 수정하고 싶어요?
+그럼 수정해주는 함수 setTitle(String title)를 하나 이렇게 만들어둔다.
+이제 앞으로 title 변수를 수정하고 싶으면 .setTitle("수정할내용") 이러면 된다.
+private 변수의 출력과 수정을 대신 해주는 함수들을 getter, setter라고 부른다.
+
+@Entity
+@Getter
+@Setter
+public class Item {
+  private String title;
+  private Integer price;
+}
+
+실은 @Getter @Setter를 변수나 클래스 위에 붙이면 getter, setter 함수를 자동으로 편리하게 만들어준다.
+Lombok 라이브러리 덕분이다.
+
+* 왜 쓰는가
+
+근데 문법만 배우고 끝내면 아무 쓸모짝에 없고
+문법을 배웠으면 왜 쓰는지 생각해봐야 나중에 활용을 할 수 있다.
+왜 public안쓰고 굳이 private 붙여놓고 getter setter 만들어서 가져다쓰는 뻘짓거리를 하는 것임?
+
+.title을 자유롭게 가져다쓰는거보다는
+private 붙여놓고 getter setter 만들어쓰는게 안전한 것 같지 않습니까
+그래서 사람들이 그렇게 쓰는데 예를 들어보자.
+
+Item item = new Item();
+item.title = "매우긴문자~~~~~~~~~";
+
+(예시1)
+여러분들이 나중에 .title 변수에 뭔가를 저장할 때 실수를 하면 어떻게 하죠?
+예를 들어 지금은 255자 까지만 저장 가능한데 1000자가 넘는 문자를 넣거나 그럴 수도 있는 것 아닙니까
+
+@Entity
+public class Item {
+  private String title;
+  private Integer price;
+
+  public void setTitle(String title) {
+    만약에 title변수에 이상한 긴 문자 넣으려고 하면 차단하기~~
+    if() return;
+    this.title = title;
+  }
+}
+
+그걸 방지하고 싶으면 변수에 private 붙여놓고 setter함수만 쓸 수 있게 만들어두고
+그리고 setter 함수 안에 if 문으로 이상한 데이터를 거르는 로직을 만들 수 있겠군요.
+그럼 더 안전하게 사용할 수 있지 않을까요.
+
+(예시2)
+이번엔 price 변수의 타입(자료형)을 Integer에서 Long으로 바꾸고 싶은 경우
+그냥 바꿔버리면 해당 클래스 Object를 사용하는 다른 클래스에서 price 변수 쓰는 곳을 전부 다 수정해줘야하는데
+setter 함수를 만들어놓은 경우에는 수정할 필요가 없이 그냥 setter 함수 안에서 타입(자료형)만 잘 변경해주면 될거같군요.
+
+그래서 setter는 private 변수의 API를 만드는 것이랑 비슷하다.
+API를 안전하게 잘 만들어두면 private 변수에 뭐 이상한걸 막 집어넣으려해도 API에서 잘 걸러줄 수 있으니까
+보다 안전하게 + 안정적으로 사용할 수 있다.
+
+그래서 좋다길래 그냥 모든 변수에 기본 setter를 전부 대충 만들어두고 쓰는 사람이 있는데
+검사로직이 추가되면 안전하게 쓸 수 있는 것이라 setter만 집어넣으면 귀찮기만 할 수 있다.
+
+* 오늘 배운거 요약
+
+클래스 안에 변수, 함수 만들 때
+private, public, static 중에 골라넣으면 되는데
+1. 다른 클래스에서 변수랑 함수 쓸 수 있게 만들거면 public
+2. 다른 클래스에서 변수랑 함수 못쓰게 만들거면 private
+3. 유틸리티 함수같은거 만들 때는 static 쓴다.
+
+근데 private 넣어두고 getter, setter 만들어서 쓰면 장점이 있기 때문에 그렇게 쓰는 사람이 많다.
+
+오늘의 숙제 :
+1. 이름과 나이를 저장할 수 있는 클래스를 하나 만들어두고
+object를 하나 뽑아서 여러분의 이름과 나이를 저장해보자.
+근데 클래스 안의 변수들을 private 변수로 만들어서 사용해보자.
+
+2. 방금 만든 클래스에서 나이를 +1 하는 함수와 나이를 바꿔주는 함수를 각각 만들어서 사용까지 해보자.
+(ShopApplication.java 소스파일 -> main 메서드에서 아래처럼 구현하기)
+var object = new 클래스();
+object.한살더하기();
+object.나이설정(12);
+
+(동작예시)
+한살더하기()를 사용시 object에 저장된 나이가 +1 되어야한다.
+나이설정(12)를 사용시 object에 저장된 나이가 12로 변경되어야한다.
+
+3. 위에서 만든 함수를 사용할 때
+나이가 음수가 되거나 100살 이상이 되는 경우를 막아주도록 함수를 업그레이드해보자.
+예를 들어 나이설정(-10) 이라고 사용하면 나이가 변동되지 않아야한다.
+
+4. Item class의 변수들도 전부 private로 만들어서 사용해보자.
+그럼 그 private 변수들을 쓰는 곳들을 다 수정해줘야겠군요.
+그건 알아서 해보자.
+
+
+
+
+
+
+
+

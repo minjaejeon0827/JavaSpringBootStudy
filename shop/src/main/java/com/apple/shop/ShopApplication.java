@@ -44,6 +44,20 @@ public class ShopApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ShopApplication.class, args);   // Spring boot로 만든 웹서버 띄우기
 
+		var object = new Human();
+		object.한살더하기();
+		System.out.println(object.나이가져오기());
+		object.나이설정(12);
+		System.out.println(object.나이가져오기());
+		object.나이설정(-10);
+
+		var a = new Test();
+		a.setName("홍길동");
+		a.setAge(60);
+		a.나이설정(20);
+		a.한살더하기();
+		System.out.println(a.getAge());  // 나이 21 출력
+
 		// var test = new Friend("park");
 		// System.out.println(test.name);
 
@@ -86,12 +100,12 @@ public class ShopApplication {
 
 // 접근 제어자 "public" 없으면 같은 폴더(패키지) 안에서만 해당 클래스 사용가능
 // 접근 제어자 "public" 붙이면 다른 폴더(패키지) 에서도 해당 클래스 사용 가능
-class Test {
-	String name = "kim";
-	void hello() {
-		System.out.println("안녕");
-	}
-}
+//class Test {
+//	String name = "kim";
+//	void hello() {
+//		System.out.println("안녕");
+//	}
+//}
 
 // 접근 제어자 "public" 없으면 같은 폴더(패키지) 안에서만 해당 클래스 사용가능
 // 접근 제어자 "public" 붙이면 다른 폴더(패키지) 에서도 해당 클래스 사용 가능

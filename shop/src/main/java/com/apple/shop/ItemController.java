@@ -51,7 +51,9 @@ public class ItemController {
 
         var a = new Item();
         System.out.println(a);  // 참고 - System.out.println(a); 처럼 .toString() 함수 생략하고 실행하더라도 Item @Entity 클래스 안에 속하는 .toString() 함수가 알아서 붙여서 해당 함수를 실행해줌.
-        System.out.println(a.title);
+        // System.out.println(a.title);
+        System.out.println(a.getTitle());
+        // System.out.println(Item.title);
         System.out.println(a.toString()); // Item.java 소스파일 -> 롬복(Lombok) 라이브러리 @ToString 사용하면 해당 Item @Entity 클래스 안에 속하는 .toString() 역할의 함수를 알아서 만들어준다.
         // (예) 위에 .toString() 함수 사용해서 Item @Entity 클래스 object 출력 예시
         // Item(id=null, title=null, price=null)

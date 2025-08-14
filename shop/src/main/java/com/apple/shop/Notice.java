@@ -1,6 +1,8 @@
 package com.apple.shop;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 // TODO: ParseException 사용하기 위해 import java.text.ParseException; import 처리 (2025.08.11 minjae)
@@ -10,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity   // @Entity(독립체 or 테이블 의미) 붙이면 "Notice" 이름으로 DBeaver - MySQL - 데이터베이스 'Shop'에 데이터 테이블 하나 생성해줌
+@Getter   // Lombok 라이브러리 사용해서 @Getter @Setter를 변수나 클래스 위에 붙이면 getter, setter 함수를 자동으로 편리하게 만들어준다.
+@Setter   // Lombok 라이브러리 사용해서 @Getter @Setter를 변수나 클래스 위에 붙이면 getter, setter 함수를 자동으로 편리하게 만들어준다.
 // @ToString // 롬복(Lombok) 라이브러리 @ToString 사용하면 해당 Notice @Entity 클래스 안에 속하는 .toString() 역할의 함수를 알아서 만들어준다.
 public class Notice {
   @Id
@@ -29,15 +33,15 @@ public class Notice {
   //             EL1008E: Property or field 'title' cannot be found on object of type 'com.apple.shop.Notice'
   // 참고 URL - https://chatgpt.com/c/689bface-14b4-8321-988b-618af0bafe2d
 
-  // public getter getTitle
-  public String getTitle() {
-    return this.title;
-  }
+  // Lombok 라이브러리 사용 안하고 직접 구현한 public getter getTitle
+  // public String getTitle() {
+  //   return this.title;
+  // }
 
-  // public getter getDate
-  public String getDate() {
-    return this.date;
-  }
+  // Lombok 라이브러리 사용 안하고 직접 구현한 public getter getDate
+  // public String getDate() {
+  //   return this.date;
+  // }
 }
 
 //@Entity   // @Entity(독립체 or 테이블 의미) 붙이면 "Notice" 이름으로 DBeaver - MySQL - 데이터베이스 'Shop'에 데이터 테이블 하나 생성해줌
