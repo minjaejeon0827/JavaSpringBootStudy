@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 //import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class ItemController {
     // }
 
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
-    @GetMapping("/list")
+    @GetMapping("/list")   // URL 작명시 명사가 좋음.
     String list(Model model) {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
 
         // var result = itemRepository.findAll();   // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
@@ -58,7 +60,7 @@ public class ItemController {
         // (예) 위에 .toString() 함수 사용해서 Item @Entity 클래스 object 출력 예시
         // Item(id=null, title=null, price=null)
 
-        return "list.html";
+        return "list.html";   // 웹페이지(list.html) 사용자 웹브라우저 출력
 
         // TODO: 아래 주석친 테스트 코드 필요시 참고 (2025.08.13 minjae)
         // System.out.println(result);
@@ -83,8 +85,101 @@ public class ItemController {
         // System.out.println(a.get(1));
     }
 
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    @GetMapping("/write")   // URL 작명시 명사가 좋음.
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    String write() {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
+        return "write.html";   // 웹페이지(list.html) 사용자 웹브라우저 출력
+    }
+
+    // 상품추가 기능?
+    // 1. 상품 이름, 가격 작성할 수 있는 웹페이지(write.html)와 폼 만들기
+    // 2. 전송버튼 누르면 데이터 웹서버 전송 -> DB에 데이터 저장
+
+    // 유저가 보낸 데이터를 웹서버 API 함수 writePost에서 출력하려면
+    // 웹서버 API 함수 소괄호 안에 파라미터를 잘 적으면 되는데
+    // 웹페이지(write.html)에 <input>보시면 title, price 라는 이름으로 인풋 데이터들을 보내고 있지 않습니까 (<input name="title"> <input name="price">)
+    // 그걸 그대로 웹서버 API 함수 writePost 소괄호 안의 파라미터란에 적어주면 유저가 보낸 title, price를 파라미터 변수에 담아준다. (String writePost(String title, Integer price))
+    // 그리고 왼쪽에 타입(String, Integer)을 적으면 그 타입으로 title, price 변수를 각각 변환해준다. (String writePost(String title, Integer price))
+
+    // (참고1) @RequestParam 생략이 안된다면
+    // 파일 - 설정 - java compiler 메뉴 검색해본 후에
+    // additional command line parameter 입력란에 -parameters 입력잘되어있는지 확인해보자.
+    // out 폴더도 삭제 후 다시 서버 띄워보자.
+
+    // (참고2) <form> 말고 ajax의 body로 전송한 데이터는 @RequestBody라는걸 써야 출력해볼 수 있는데 나중에 알아보자.
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // CASE 1: 데이터 2가지만 웹서버로 들어오는 경우 (@RequestParam(name="title") String title, @RequestParam(name="price") Integer price) )
+
+//    @PostMapping("/add")   // URL 작명시 명사가 좋음.
+//    // String writePost(@RequestParam Map<String, Object> formData) {
+//    // String writePost(@RequestParam String title, @RequestParam Integer price) {
+//    // String addPost(@RequestParam String title, @RequestParam Integer price) {
+//    String writePost(@RequestParam(name="title") String title,
+//                     @RequestParam(name="price") Integer price) {
+//
+//        Item newItem = new Item();
+//        newItem.setTitle(title);
+//        newItem.setPrice(price);
+//        itemRepository.save(newItem);   // Item 테이블에 행(raw)으로 데이터 저장
+//
+//        // System.out.println(title);
+//        // System.out.println(price);
+//
+//        // var test = new Item();
+//        // test.setTitle(title);
+//        // test.setPrice(price);
+//
+//        return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+//    }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // CASE 2: 데이터 여러개가 웹서버로 들어오는 경우
+    // Map 자료형 형태로 유저가 보낸 모든 데이터 변환해줌 (@RequestParam Map<String, Object> formData)
+    // Map 자료형은 여러 데이터 한 변수에 넣고 싶을 때 사용함.
+    @PostMapping("/add")   // URL 작명시 명사가 좋음.
+    // String writePost(@RequestParam Map<String, Object> formData) {
+    // String writePost(@RequestParam Map formData) {
+    String writePost(@RequestParam Map<String, Object> formData) {
+        Item newItem = new Item();
+        newItem.setTitle(formData.get("title").toString());   // Map 자료형 변수 formData에서 key가 "title"인 value 값 문자열 변환(.toString()) 후 newItem.setTitle() 함수 호출
+
+        // TODO: 아래와 같은 오류 메시지 출력되어 형변환 방식 변경함. (2025.08.19 minjae)
+        //       (기존) 명시적 형변환 (Integer) -> (변경) Integer.valueOf(formData.get("price").toString())
+        // 오류 메시지 - There was an unexpected error (type=Internal Server Error, status=500).
+        //             class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
+        //             java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
+        //	           at com.apple.shop.ItemController.writePost(ItemController.java:147)
+        // 참고 URL - https://claude.ai/chat/8f335633-2258-45f2-b12f-ee216b920c58
+        // newItem.setPrice((Integer)formData.get("price"));   // Map 자료형 변수 formData에서 key가 "price"인 value 값 정수 변환(Integer) 후 newItem.setTitle() 함수 호출
+        newItem.setPrice(Integer.valueOf(formData.get("price").toString()));   // Map 자료형 변수 formData에서 key가 "price"인 value 값 문자열 변환(.toString()) 및 정수 변환(Integer.valueOf) 후 newItem.setPrice() 함수 호출
+
+        itemRepository.save(newItem);
+
+        return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+
+        // TODO: 아래 주석친 코드 필요시 참고 (2025.08.19 minjae)
+        // var test = new HashMap<>();
+        // HashMap<String, Object> test = new HashMap<>();
+        // Map<String, Object> test = new HashMap<>();
+        // test.put("name", "kim");
+        // test.put("age", 20);
+        // System.out.println(test);
+        // System.out.println(test.get("name"));  // Map 자료형 변수 test에서 key가 "name"인 value 값 출력
+        // System.out.println(test.get("age"));  // Map 자료형 변수 test에서 key가 "age"인 value 값 출력
+
+        // System.out.println(formData);
+
+        // Map<String, Object> test = new HashMap<>();
+        // test.put("title", title);  자료이름: "title" 자료값: title
+        // test.put("price", price);  자료이름: "price" 자료값: price
+
+        // itemRepository.save(test);
+    }
+
     // 웹서버 API 작성 예시
-    // @GetMapping("/list")
+    // @GetMapping("/list")   // URL 작명시 명사가 좋음.
     // String list(){
     //     return "list.html";
     // }

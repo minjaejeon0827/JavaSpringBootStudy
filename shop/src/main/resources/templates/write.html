@@ -1,0 +1,27 @@
+<!doctype html>
+<!--  TODO: Thymeleaf 템플릿 엔진 오류 메시지 "Namespace 'th' is not bound" 출력되어 아래처럼 코드 추가(<html xmlns:th="http://www.thymeleaf.org">) (2025.07.28 minjae)  -->
+<!--  참고 URL - https://chatgpt.com/c/6886b0a4-4f98-8010-8034-85384f67f258  -->
+<!--  아래 xmlns:th에서 th는 Thymeleaf의 약자 이다.  -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet">   <!-- 상대경로를 / 부터 시작하면(href="/main.css") static 폴더에 속한 파일들 접근 및 사용가능 -->
+</head>
+<body>
+
+  <!--  상품추가 기능?  -->
+  <!--  1. 상품 이름, 가격 작성할 수 있는 웹페이지(write.html)와 폼 만들기  -->
+  <!--  2. 전송버튼 누르면 데이터 웹서버 전송 -> DB에 데이터 저장  -->
+  <!--  전송버튼(<button type="button">전송</button>) 눌렀을 때 특정 /URL로 POST요청을 날릴 수 있다.(웹서버 API 함수로 데이터 전송 가능)  -->
+  <form action="/add" method="POST">
+    <input name="title">
+    <input name="price">
+    <button type="submit">전송</button>
+  </form>
+
+</body>
+</html>

@@ -2107,6 +2107,209 @@ object.나이설정(12);
 그럼 그 private 변수들을 쓰는 곳들을 다 수정해줘야겠군요.
 그건 알아서 해보자.
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 2
+14강 - 상품 추가기능 1 (Map 자료형)
+
+오늘의 숙제 :
+서버는 데이터 받으면 Item 테이블에 저장해주는 기능을 완성해오자.
+
+쇼핑몰을 운영할거면 내가 팔고싶은 상품을 하나 맘대로 추가할 수 있는 기능도 있어야겠군요
+상품을 하나 추가하는 기능을 만들어보자.
+실은 거의 모든 웹서비스는 게시판과 똑같아서
+게시판 글 추가기능이라고 생각해도 되는데 실은 알아서 다 할 수 있다.
+
+선생코드 외워서 베끼는걸 코딩이라고 생각하는 분들이 있는데
+코드는 원래 혼자 알아서 짜는것이다.
+
+Q. 안배운건데 코드를 내가 어떻게 짜요?
+- 이 기능이 어떻게 동작하는지 한글로 설명부터 적은 후 그대로 번역만 하면 된다고 기초강의에서 많이 강조했다.
+
+* 상품 추가기능을 글로 적어보면
+
+그래서 상품하나 추가하는 기능을 글로 설명부터 해보면
+1. 상품추가하는 페이지 하나 만들고 폼도 만들어놓고
+2. 전송버튼 누르면 그 내용을 DB로 보내서 저장
+이게 끝 아니겠습니까
+
+근데 이러면 문제가 하나 있다.
+유저가 마구 작성한걸 DB에 바로 집어넣어버리면 좀 위험하지 않을까요?
+
+그래서 항상 DB 조작이 필요하면 중간에 서버가 개입해서 이거저거 검사해주는게 좋다.
+
+1. 글작성페이지 하나 만들고 인풋과 폼 만들어놓고
+2. 유저가 전송누르면 글을 서버로 먼저 보내고
+3. 그 다음에 서버는 글을 검사 후 별일 없으면 DB에 저장
+저는 이렇게 적어봤고 이제 코드로 번역만 하면 되겠군요.
+모르는게 나오면 구글에게 물어보면 된다.
+
+* 1. 글작성페이지 만들기
+
+(write.html)
+
+<form>
+  <input name="title">
+  <input name="price">
+  <button type="button">전송</button>
+</form>
+
+대충 다른 html 파일이랑 비슷하게 만들어두고
+<body>태그 안에 <form> 하나를 추가해봤다.
+상품 이름이랑 가격을 입력할 수 있는 <input>도 마련해봤다. (<input name="title"> <input name="price">)
+input 만들 때 중요한게 name 속성을 잘 작명해놔야 서버로 전송이 된다.
+
+이걸 이제 유저들에게 어떻게 보여줄거에요?
+html 웹페이지 보내주고 싶으면 API를 하나 만들면 된다.
+
+// 웹서버 API
+@GetMapping("/write")
+String write() {
+  return "write.html";
+}
+
+누가 /write로 접속하면 글작성 페이지를 보내라고 해봤다.
+/write 접속해서 진짜 나오나 테스트해보자.
+
+* 2. 전송누르면 서버로 글 전송
+
+HTTP POST 요청을 날리면 웹페이지에서 사용자가 작성한 문자나 숫자를 서버로 전송할 수 있다.
+POST요청은 어떻게 날리냐면 <form>에 잘 뭔가 기입하면 되는데
+
+(write.html)
+
+<form action="/add" method="POST">
+  <input name="title">
+  <input name="price">
+  <button type="button">전송</button>
+</form>
+
+action="/URL"과
+method="POST"를 기입하면
+전송버튼(<button type="button">전송</button>) 눌렀을 때 특정 /URL로 POST요청을 날릴 수 있다.
+근데 웹서버에 만들어둔 API와 URL이 없어서 아무렇게나 /add로 작명해놨다.
+
+* 3. 서버는 데이터 받으면 확인 후 DB저장
+
+// 웹서버 API
+@PostMapping("/add")
+String writePost() {
+ return "";
+}
+
+API를 하나 만들어보자.
+@PostMapping 으로 바꾸면 유저의 HTTP POST 요청을 처리하는 API를 만들 수 있다.
+참고로 @DeleteMapping, @PutMapping 이런 식으로 쓰면 DELETE, PUT 요청도 처리하는 API를 만들 수 있다.
+여기서 유저가 보낸 데이터를 웹서버가 이거저거 출력하고 검사해보고 DB에 저장해주면 되는거 아닙니까
+
+* 유저가 보낸 데이터 출력은
+
+// 웹서버 API
+@PostMapping("/add")
+String writePost(String title, Integer price) {
+  return "";
+}
+
+유저가 보낸 데이터를 웹서버 API 함수에서 출력하려면
+웹서버 API 함수 소괄호 안에 파라미터를 잘 적으면 되는데
+
+위에 <input>보시면 title, price 라는 이름으로 인풋 데이터들을 보내고 있지 않습니까 (<input name="title"> <input name="price">)
+그걸 그대로 웹서버 API 함수 소괄호 안의 파라미터란에 적어주면 유저가 보낸 title, price를 파라미터 변수에 담아준다. (String writePost(String title, Integer price))
+그리고 왼쪽에 타입(String, Integer)을 적으면 그 타입으로 title, price 변수를 각각 변환해준다. (String writePost(String title, Integer price))
+
+@PostMapping("/add")
+String writePost(@RequestParam String title, @RequestParam Integer price) {
+ return "redirect:/list";
+}
+
+- 안되면 왼쪽에 @RequestParam 붙여보자.
+- redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+
+(참고1) @RequestParam 생략이 안된다면
+파일 - 설정 - java compiler 메뉴 검색해본 후에
+additional command line parameter 입력란에 -parameters 입력잘되어있는지 확인해보자.
+out 폴더도 삭제 후 다시 서버 띄워보자.
+
+(참고2) <form> 말고 ajax의 body로 전송한 데이터는 @RequestBody라는걸 써야 출력해볼 수 있는데 나중에 알아보자.
+
+(참고3) 유저가 보내는 데이터가 100개면 웹서버 API 함수 소괄호 안에 파라미터도 100개 적어야되는데
+그게 귀찮으면 Map 자료형에 한 번에 담으라고할 수도 있다.
+
+@PostMapping("/add")
+String writePost(@RequestParam Map<String, Object> formData) {
+ return "redirect:/list";
+}
+
+Map 자료형도 List처럼 자료 여러개를 한 변수에 저장하고 싶을 때 쓰는 자료형인데
+어떻게 쓰는지 알아보자.
+
+* Map 자료형
+
+변수 하나에 내 이름과 주소를 저장하고 싶으면 어떻게 하죠?
+List 써서 다 쑤셔넣는 방법도 있는데 엘레강스하게 저장하고 싶으면 Map을 만들어서 쓰셔도 된다.
+
+Map test = new HashMap<>();
+
+- Map 변수 = new HashMap<>(); 쓰면 Map 자료형 변수를 하나 만들 수 있다.
+- 변수.put() 이용하면 Map 자료형 변수 안에 데이터를 집어넣을 수 있다.
+
+Map test = new HashMap<>();
+test.put("name", "kim");
+test.put("address", "seoul");
+
+- List랑 다르게 자료마다 이름을 붙여서 저장해야한다. 변수.put("자료이름", "자료값")
+- 멋있는 말로 자료 이름은 key, 자료 값은 value라고 부른다.
+진짜 저장되는지 test 변수 출력도 해보자.
+
+Map test = new HashMap<>();
+test.put("name", "kim");
+test.put("address", "seoul");
+System.out.println(test.get("address"));
+
+- 자료 하나 출력은 변수.get("자료이름") 쓰면 된다.
+
+Map<String, String> test = new HashMap<>();
+test.put("name", "kim");
+test.put("address", "seoul");
+
+- 그리고 저장할 자료의 타입을 엄격하게 제한하고 싶으면
+<자료이름타입, 자료값타입> 이렇게 잘 적어두자. (Map<String, String> test)
+원래 <> 2개에 전부 넣어줘야하는데 귀찮으면 왼쪽에만(Map<String, String> test) 넣으면 오른쪽에도(new HashMap<>();) 알아서 들어간다.
+
+(참고1) 가끔씩 문자나 숫자를 전부 저장하고 싶거나 그런 경우엔 Object라고 쓰면 된다.
+Object는 String Integer 이런 것들의 상위타입(부모 클래스 or 조상 클래스)이라 그렇다.
+
+(참고2) Map은 2종류가 있는데 그 중에 HashMap을 자주 사용한다.
+그리고 그것들의 상위 타입(부모 클래스 or 조상 클래스)이 Map이라서 Map타입이라고 기재하는 경우가 많다.
+그러면 다른 종류의 Map으로 전환이 쉬워진다. (전환할 일 없음)
+
+오늘의 숙제 :
+서버는 정보(데이터) 받으면 Item 테이블에 정보(데이터) 저장해주는 기능을 완성해오자.
+폼 전송시 그 정보(데이터)들이 Item 테이블에 추가되면 성공이다.
+JPA로 테이블에 정보(데이터) 저장하는 문법을 모르겠다면 구글과 AI에게 물어봐야지 생각한다고 나오는게 아님
+
+JPA save 함수 (테이블에 정보(데이터) 저장해주는 기능)
+참고 URL - https://wikidocs.net/161396
+참고 2 URL - https://gaga-kim.tistory.com/309
+참고 3 URL - https://itconquest.tistory.com/entry/Spring-Boot-JPA%EC%99%80-Hibernate
+참고 4 URL - https://isaac-christian.tistory.com/entry/Spring-Boot-JPAJava-Persistence-API-Hibernate-Spring-Data-JPA
+참고 5 URL - https://velog.io/@dnrwhddk1/3.-SpringBoot%EC%97%90%EC%84%9C-JPA%EB%A1%9C-DB-%EB%8B%A4%EB%A3%A8%EA%B8%B0-%EA%B0%84%EB%8B%A8%ED%95%9C-API-Auditing
+참고 6 URL - https://dsc-sookmyung.tistory.com/596
+참고 7 URL - https://terianp.tistory.com/166
+참고 8 URL - https://velog.io/@qweadzs/3.-Spring-boot-%EC%8A%A4%ED%94%84%EB%A7%81-%EB%B6%80%ED%8A%B8%EC%97%90%EC%84%9C-JPA%EB%A1%9C-DB%EB%A5%BC-%EB%8B%A4%EB%A4%84%EB%B3%B4%EC%9E%90
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
