@@ -1,0 +1,23 @@
+<!--  navbar 변동사항 생길 경우 이 파일(nav.html)만 수정하면 다른 파일에도 수정된 사항이 자동으로 반영되서 편리하다.  -->
+<!--  (참고2) th:fragment 정의는 한 파일에 여러번 사용해도 된다. (예) - nav.html 파일 안에 여러번 사용 가능(th:fragment="navbar" / th:fragment="navbar2")  -->
+
+<!--  TODO: Thymeleaf 템플릿 엔진 오류 메시지 "Namespace 'th' is not bound" 출력되어 아래처럼 코드 추가(<html xmlns:th="http://www.thymeleaf.org">) (2025.07.28 minjae)  -->
+<!--  참고 URL - https://chatgpt.com/c/6886b0a4-4f98-8010-8034-85384f67f258  -->
+<!--  아래 xmlns:th에서 th는 Thymeleaf의 약자 이다.  -->
+<html xmlns:th="http://www.thymeleaf.org">
+  <!--  이런 html 덩어리를 재사용하고 싶으면 th:fragment="작명" (th:fragment="navbar") 입력해두면 되는데 그럼 다른 파일에서 이 html 덩어리를 쉽게 쓸 수 있다.  -->
+  <div class="nav" th:fragment="navbar">
+    <a class="logo">SpringMall</a>
+    <a href="/list">List</a>     <!--  href="/list" - "List" 클릭시 웹페이지(list.html) 이동  -->
+    <a href="/write">Write</a>   <!--  href="/write" - "Write" 클릭시 웹페이지(write.html) 이동  -->
+  </div>
+</html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<!--  이런 html 덩어리를 재사용하고 싶으면 th:fragment="작명" (th:fragment="navbar2") 입력해두면 되는데 그럼 다른 파일에서 이 html 덩어리를 쉽게 쓸 수 있다.  -->
+<div class="nav" th:fragment="navbar2">
+  <a class="logo">SpringMall</a>
+  <a>List</a>
+  <a>Write</a>
+</div>
+</html>

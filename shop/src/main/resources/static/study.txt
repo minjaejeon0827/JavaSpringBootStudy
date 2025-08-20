@@ -2297,6 +2297,136 @@ JPA save 함수 (테이블에 정보(데이터) 저장해주는 기능)
 참고 7 URL - https://terianp.tistory.com/166
 참고 8 URL - https://velog.io/@qweadzs/3.-Spring-boot-%EC%8A%A4%ED%94%84%EB%A7%81-%EB%B6%80%ED%8A%B8%EC%97%90%EC%84%9C-JPA%EB%A1%9C-DB%EB%A5%BC-%EB%8B%A4%EB%A4%84%EB%B3%B4%EC%9E%90
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 2
+15강 - 상품 추가기능 2 & Navbar 만들기
+
+* 저번시간 숙제
+
+유저가 제출한 내용(데이터)을 이거저거 검사해본 다음에 Item 테이블에 데이터 저장하는 기능을 만들어보자.
+테이블에 데이터 저장하는건 어떻게 하냐면
+new Item()으로 생성한 변수에다가 여러가지 정보(데이터)를 채운 다음에
+리포지토리.save() 함수 소괄호 안에 new Item()으로 생성한 변수를 넣으면 그 정보(데이터)들을 채워서 행을 하나 테이블에 데이터로 추가해준다.
+
+(ItemController.java)
+
+@PostMapping("/add")
+String writePost(String title, Integer price) {
+  Item item = new Item();
+  item.setTitle(title);
+  item.setPrice(price);
+  itemRepository.save(item);
+  return "redirect:/list";
+}
+
+그래서 해봤다.
+저는 Item 클래스에 속하는 멤버변수에 private을 붙여놨기 때문에 setter 함수를 사용해서 데이터를 집어넣었다.
+진짜 저장 잘 되는지 테스트도 해보자.
+
+* 유저가 보낸 데이터를 object로 쉽게 변환하려면 @ModelAttribute
+
+가끔 유저가 웹서버 API 함수로 보낸 데이터를 object로 바로 변환하고 싶을 때가 있다.
+그럼 편리할 것 같지 않습니까
+
+(ItemController.java)
+
+@PostMapping("/add")
+String writePost(@ModelAttribute Item item) {
+  itemRepository.save(item);
+  return "redirect:/list";
+}
+
+그러고 싶으면 @ModelAttribute 클래스명 변수명 이렇게 작성하면 (@ModelAttribute Item item)
+var 변수명 = new 클래스명() 을 알아서 해주고
+그 변수에 유저가 웹서버 API 함수로 보낸 데이터를 다 집어넣어준다.
+남의 말 믿지 말고 진짜인지 item 변수 출력해보자.
+
+* Navbar 만들기
+
+오늘은 상단메뉴(Navbar)를 만들어보자.
+
+<div class="nav">
+  <a class="logo">SpringMall</a>
+  <a>List</a>
+  <a>Write</a>
+</div>
+
+(main.css)
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap');
+.nav {
+ display: flex;
+ padding: 10px;
+ align-items: center;
+ font-family : 'Montserrat';
+}
+.nav a {
+ margin-right: 10px;
+ text-decoration : none;
+ font-weight : 400;
+ letter-spacing : -0.5px;
+}
+.nav .logo {
+ font-weight : 800;
+}
+
+input, button {
+ padding : 8px 13px;
+ margin-top : 5px;
+ border : 1px solid grey;
+ border-radius : 4px;
+ vertical-align : middle;
+}
+button {
+ background : black;
+ color : white;
+ border : none;
+}
+input {
+ display : block;
+}
+
+복붙하면 Navbar가 생성된다.
+밑에 button, input 디자인용 CSS도 넣어봤다.
+
+근데 잘 생각해보면 Navbar를 여러 웹페이지에 매번 복붙하는게 힘들지 않겠습니까
+웹페이지가 몇 개 없으면 손수 복붙해도 되긴 하는데
+그럼 나중에 Navbar 수정이 필요하면 복붙해놨던 모든 html 웹페이지를 수정해야겠군요.
+그게 싫으면 웹페이지마다 재사용하고 있는 UI(Navbar)를 별도 파일로 뺀 다음에 이걸 가져다 쓰는 식으로 개발하면 된다.
+타임리프(Thymeleaf) 문법 쓰면 쉽게 가능하다.
+
+* HTML UI 재사용하기
+
+templates 폴더에 재사용할 html 덩어리를 보관할 파일(nav.html)을 하나 만들어보자.
+
+(nav.html)
+
+<div class="nav" th:fragment="navbar">
+  <a class="logo">SpringMall</a>
+  <a>List</a>
+  <a>Write</a>
+</div>
+
+이런 html 덩어리를 재사용하고 싶으면
+th:fragment="작명" (th:fragment="navbar")
+입력해두면 되는데 그럼 다른 파일에서 이 html 덩어리를 쉽게 쓸 수 있다.
+
+(다른 html 파일 - (예) list.html)
+
+<div th:replace="~{nav.html :: navbar}"></div>
+
+(다른 html 파일 - (예) list.html)에서 th:replace="~{파일경로 :: fragment이름}" 이렇게 쓰면 (th:replace="~{nav.html :: navbar}")
+그 파일경로에 있던 th:fragment를 가져다가 첨부해준다. (th:fragment="navbar")
+그래서 위처럼 작성하면 div태그 내용물을 th:fragment="navbar" 붙은 html 덩어리로 갈아치워준다. (th:replace="~{nav.html :: navbar}")
+
+(참고1) th:insert 사용하면 div를 갈아치우는게 아니라 div 안에 붙여넣어준다.
+근데 갈아치우는게 일반적임
+
+(참고2) th:fragment 정의는 한 파일에 여러번 사용해도 된다. (예) - nav.html 파일 안에 여러번 사용 가능
+
+(참고3) html 덩어리((예) nav.html)로 변수나 데이터같은걸 전송해줄 수도 있다.
+th:replace="nav.html :: navbar('데이터1', '데이터2')"
+이러면 되는데 이런게 가능하다고만 알아두자.
+어짜피 까먹으니 세부문법은 나중에 필요하면 찾아쓰자.
 
 
 
