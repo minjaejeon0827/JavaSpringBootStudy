@@ -3,10 +3,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 //import java.util.ArrayList;
@@ -132,6 +129,52 @@ public class ItemController {
         // item.price = 123;
     }
 
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    @GetMapping("/detail/{id}")
+    // String detail() {
+    // (힌트) 유저가 URL 파라미터에 마구 입력한 값을 서버에서 쉽게 알 수 있는데 @PathVariable 이라는걸 찾아보면 되겠다.
+    // TODO: 아래와 같은 오류 메시지 출력되어 @PathVariable Long id를 detail 웹서버 API 메서드 파라미터에 추가 완료 (2025.08.21 minjae)
+    // 오류 메시지 - Cannot resolve symbol 'id'
+    // 참고 URL - https://claude.ai/chat/577f41cb-1efb-45f6-ad06-52fb55c9b243
+    String detail(@PathVariable Long id, Model model) {
+        // var result = itemRepository.findById(1L);
+        // Optional<Item> result = itemRepository.findById(1L);
+        Optional<Item> result = itemRepository.findById(id);   // 컬럼 id에 할당된 값(메서드 파라미터 변수 id)과 동일한 행(Raw)을 테이블에서 가져오기
+
+        // Optional타입(자료형)result변수.isPresent() 라고 쓰면 result변수 안에 할당된 값이 뭐가 들어있으면 true를 그 자리에 남겨준다.
+        // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
+        if (result.isPresent()){
+            // Optional 자료(데이터)는 .get() 붙여야 안에 들어있는 자료(데이터)가 나온다. (result.get())
+            // 물론 result 변수에 값이 비어있을 수 있기 때문에(변수에 할당된 값이 null인 경우) 그냥 .get() 하고 그러면 웹서버가 에러나고 동작이 멈출 수 있다.
+            // 그래서 "만약에 result 변수 안에 할당된 값이 뭐가 있는 경우에만 .get() 해서 사용해라" 이렇게 쓰는게 안전하고 좋다.
+            System.out.println(result.get());   // ShopApplication 콘솔창(Console) 출력 결과 - (예) Item(id=1, title=셔츠, price=7000)
+            model.addAttribute("item", result.get());
+            return "detail.html";
+        } else {
+            return "~~~";
+        }
+    }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    // 참고 사항 - URL 파라미터는 1개 이상 여러개도 사용 가능
+    // URL 파라미터 문법 예시 1 - URL 파라미터 1 개만 사용 {id}
+//    @GetMapping("/detail/{id}")
+//    String detail(@PathVariable Long id, Model model) {
+//      return "";
+//    }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    // 참고 사항 - URL 파라미터는 1개 이상 여러개도 사용 가능
+    // URL 파라미터 문법 예시 2 - URL 파라미터 2 개만 사용 {id} {id2}
+//    @GetMapping("/detail/{id}/{id2}")
+//    String detail(@PathVariable Long id, @PathVariable Long id2, Model model) {
+//        return "";
+//    }
+
+    // TODO: 아래 주석친 코드 필요시 참고 (2025.08.20 minjae)
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     // CASE 1-2: 데이터 2가지만 웹서버로 들어오는 경우 (@RequestParam(name="title") String title, @RequestParam(name="price") Integer price))
 

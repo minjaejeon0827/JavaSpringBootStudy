@@ -2428,6 +2428,180 @@ th:replace="nav.html :: navbar('데이터1', '데이터2')"
 이러면 되는데 이런게 가능하다고만 알아두자.
 어짜피 까먹으니 세부문법은 나중에 필요하면 찾아쓰자.
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 2
+16강 - 상세페이지 만들기 1 (Optional)
+
+오늘의 숙제 :
+하단 참고
+
+심심하니까 상품마다 상세페이지를 만들어보자.
+상품명을 클릭하면 상세페이지로 이동시키면 될거같은데
+한글로 설명부터 적어보도록 하자.
+근데 상세페이지가 어떤 식으로 동작하는지 모르겠어서 설명도 못하겠으면 다른 사이트들을 참고하면 된다.
+
+* 다른 쇼핑몰은 어떻게 동작하나
+
+예를 들어 11st.co.kr/mart/category?categories=1120865 이런 쇼핑몰의 상세페이지를 구경해보자.
+(예) 상품 상세 웹페이지 11st.co.kr/products/4284278427
+
+▲ 위처럼 /products/어쩌구(상품번호)로 접속하면 상품 상세 웹페이지를 보여준다.
+근데 어쩌구 부분은 상품번호 아닐까요?
+여러개 눌러보면 그런 것 같다.
+
+그래서 우리도 이 방식과 비슷하게 웹서버 API나 웹페이지들을 만들면 될 것 같군요.
+누가 /detail/1 로 접속하면 1번 상품 보여주고
+누가 /detail/2 로 접속하면 2번 상품 보여주고
+그래보자.
+1번 상품이 뭐냐면 Item 테이블에 있던 컬럼 id의 값이 1인 상품이다.
+
+근데 그럼 지금 상품이 4개 있으니까 웹페이지가 4개 필요하고 그럼 웹페이지 보내주는 웹서버 API도 4개 만들어야겠네요?
+그러면 된다.
+근데 상품이 100만개 있으면 어쩔거에요?
+웹서버 API를 100만개 만들어야하는데
+URL 파라미터라는 문법을 쓰면 굳이 비슷한 URL 가진 웹서버 API들을 여러개 만들 필요가 없다.
+
+* URL 파라미터
+
+@GetMapping("/detail/{id}")
+String detail() {
+  return "detail.html";
+}
+
+서버에서 URL을 정할 때 {작명} (예) {id} 이런걸 사용하면 아무 문자라는 뜻이 된다.
+그래서 위처럼 작성하면 누가 /detail/ 뒤에 아무 문자나 입력하면 이 웹서버 API가 실행된다.
+
+그럼 웹서버 API들을 100만개 직접 만들 필요가 없어지죠?
+그래서 비슷한 URL가진 웹서버 API가 여러개 필요하면 이런 문법 씁시다.
+
+- 작명은 진짜로 아무렇게나 가능
+- 여러개 동시 사용가능 (슬래시로 서로 구분하는게 좋음)
+
+* detail.html 만들기
+
+detail.html 웹페이지 보내주라고 한 것 같은데 (return "detail.html";)
+이 웹페이지도 하나 만들어보자.
+
+상세 웹페이지 HTML CSS 레이아웃
+
+<div class="detail">
+  <h4>상세페이지</h4>
+  <img src="https://placehold.co/300">
+  <h4>금도금 바지</h4>
+  <p>7억</p>
+</div>
+
+.detail {
+  text-align : center;
+}
+.detail img{
+  max-width : 30%;
+  display : block;
+  margin : auto;
+}
+
+/detail/1
+/detail/2
+/detail/3
+웹브라우저에서 이런 경로로 접속해보자. 진짜로 상세 웹페이지 나오죠?
+
+Q. 근데 매번 똑같은 html 내용만 보여주고 있는데요?
+- 상품이 4개니까 html 파일도 상품마다 하나씩 총 4개 각각 만들어두면 된다.
+근데 굳이 그럴 이유가 없는게
+html 전송할 때 html에 매번 다른 데이터를 박아서 보여줄 수 있다고 배운 것 같은데 그렇게 하면 된다.
+
+* DB에서 글 뽑아서 html에 박아보자
+
+누가 /detail/1로 접속하면 1번 상품 DB에서 가져와서 html에 박아 보여주고
+누가 /detail/2로 접속하면 2번 상품 DB에서 가져와서 html에 박아 보여주고
+그래보자.
+
+1번 상품은 컬럼 id의 값이 1로 저장되어있는 상품인데
+컬럼 id의 값이 1인 행(Raw)을 테이블에서 어떻게 출력하죠?
+안배운건 검색해봐야 나온다.
+
+"jpa에서 id로 찾아오기~" 이런거 검색해보면 되겠네요.
+근데 요즘은 구글보다 AI 검색 툴이 훨씬 나은 것 같다. (GPT는 원래 검색툴이다.)
+요즘은 검색하면 학원강의 그대로 받아적은 게시물밖에 안보임
+
+@GetMapping("/detail/{id}")
+String detail() {
+  var result = itemRepository.findById(1L);
+  return "detail.html";
+}
+
+리포지토리.findById(1L) 이러면 id가 1인 행(Raw)을 찾아온다는군요.
+참고로 숫자를 Long 타입으로 만들고 싶으면 뒤에 L 적으면 된다.
+이걸 변수(result)에 저장해서 이제 html에 보내면 될거같은데 근데 var 자리에 타입(자료형)은 뭘 넣어야하게요?
+모르겠으면 변수(result)에 마우스 올려보면 된다.
+Optional 이런 타입(자료형)을 넣으라는군요.
+
+* Optional 타입
+
+Optional은 변수에 할당된 값이 null일 수도 있고 아닐 수도 있다는 타입(자료형)이다.
+DB에서 찾은걸 왜 이런 타입(자료형)으로 변형해주냐면
+가끔 DB에 컬럼 id의 값이 1인 행(Raw)이 없을 수도 있는거 아닙니까?
+그럴 땐 null 혹은 텅빈 값이 아마 이 변수에 들어올것이다.
+그래서 JPA 만든 사람이 변수에 할당된 값이 null일수도 있으니까 조심해서 쓰라고 만들어준 타입(자료형)이다.
+
+@GetMapping("/detail/{id}")
+String detail() {
+
+  Optional<Item> result = itemRepository.findById(1L);
+  System.out.println(result.get());
+  return "detail.html";
+}
+
+Optional 자료(데이터)는 .get() 붙여야 안에 들어있는 자료(데이터)가 나온다. (result.get())
+물론 result 변수에 값이 비어있을 수 있기 때문에(변수에 할당된 값이 null인 경우) 그냥 .get() 하고 그러면 웹서버가 에러나고 동작이 멈출 수 있다.
+그래서 "만약에 result 변수 안에 할당된 값이 뭐가 있는 경우에만 .get() 해서 사용해라" 이렇게 쓰는게 안전하고 좋다.
+
+@GetMapping("/detail/{id}")
+String detail() {
+
+  Optional<Item> result = itemRepository.findById(id);
+  if (result.isPresent()){
+    System.out.println(result.get());
+    return "detail.html";
+  } else {
+    return "~~~";
+  }
+}
+
+Optional타입(자료형)result변수.isPresent() 라고 쓰면 result변수 안에 할당된 값이 뭐가 들어있으면 true를 그 자리에 남겨준다.
+그래서 위처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
+근데 if 안쓰면 에디터가 알아서 잡아줘서 외우고 그럴 필요는 없다.
+
+아무튼 result.get() 출력해보면 DB에서 뽑은 컬럼 id의 값이 1인 1번글 내용이 나오는데
+이걸 그대로 html 파일에 박아서 진짜 상세페이지처럼 만들어보는건 여러분들이 알아서 숙제로 해옵시다.
+
+오늘의 숙제 :
+상세 웹페이지를 마저 완성해오자.
+/detail/1로 접속하면 컬럼 id의 값이 1인 상품의 제목과 가격이 잘 보여야한다.
+심심하면 상품제목 누르면 상세페이지로 이동하는 링크도 만들어봅시다.
+
+(힌트) 유저가 URL 파라미터에 마구 입력한 값을 서버에서 쉽게 알 수 있는데
+@PathVariable 이라는걸 찾아보면 되겠다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

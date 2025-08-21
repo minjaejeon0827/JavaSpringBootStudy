@@ -31,7 +31,20 @@
   <div class="card" th:each="i: ${items}">
     <img src="https://placehold.co/300">
     <div>
-      <h4 th:text="${i.title}">바지</h4>
+
+      <!--  TODO: 아래와 같은 오류 메시지가 출력되어 코드 변경 처리함. (2025.08.21 minjae)  -->
+      <!--  (기존) <h4 th:text="${i.title}" th:href="/detail/${i.id}">바지</h4>  -->
+      <!--  (변경) <a th:href="@{/detail/{id}(id=${i.id})}">  -->
+      <!--            <h4 th:text="${i.title}">바지</h4>      -->
+      <!--        </a>                                       -->
+      <!--  오류 메시지 - Caused by: org.attoparser.ParseException: Could not parse as expression: "/detail/${i.id}" (template: "list.html" - line 34, col 32)  -->
+      <!--  오류 메시지2 - Caused by: org.thymeleaf.exceptions.TemplateProcessingException: Could not parse as expression: "/detail/${i.id}" (template: "list.html" - line 34, col 32)  -->
+      <!--  참고 URL - https://claude.ai/chat/57c93401-214f-4405-bae8-abc088ff120d  -->
+      <a th:href="@{/detail/{id}(id=${i.id})}">
+          <h4 th:text="${i.title}">바지</h4>
+      </a>
+
+      <!--  <h4 th:text="${i.title}" th:href="/detail/${i.id}">바지</h4>  -->
       <!--  <h4 th:text="${items.get(0).title}">바지</h4>  -->  <!--  첫 상품의 title 꺼내주는 코드 th:text="${items.get(0).title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리  -->
       <!--  <h4 th:text="${items[0].title}">바지</h4>  -->  <!--  첫 상품의 title 꺼내주는 코드 th:text="${items[0].title}" 문자열이 "바지"를 대체하고 덮어쓰기 처리  -->
       <!--  <p>7억</p>  -->
