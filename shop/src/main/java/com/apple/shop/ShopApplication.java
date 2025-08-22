@@ -44,6 +44,8 @@ public class ShopApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ShopApplication.class, args);   // Spring boot로 만든 웹서버 띄우기
 
+		// throw new Exception();   // 강제로 에러 처리
+
 		var object = new Human();
 		object.한살더하기();
 		System.out.println(object.나이가져오기());

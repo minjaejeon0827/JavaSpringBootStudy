@@ -41,13 +41,16 @@ public class ItemController {
 
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     @GetMapping("/list")   // URL 작명시 명사가 좋음.
-    String list(Model model) {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
+    // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
+    String list(Model model) throws Exception {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
 
         // var result = itemRepository.findAll();   // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
         List<Item> result = itemRepository.findAll();   // 데이터 출력 중인 테이블 클래스 "Item"으로 List 타입(자료형) 명확하게 해서 DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
 
         model.addAttribute("items", result);   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "items" , 값 result 메서드 addAttribute 사용해서 집어넣기
         // model.addAttribute("name", "비싼 바지");  // html 파일에 보내고 싶은 웹서버데이터 이름 "name", 값 "비싼 바지" 메서드 addAttribute 사용해서 집어넣기
+
+        // throw new Exception();   // 강제로 에러 처리
 
         var a = new Item();
         System.out.println(a);  // 참고 - System.out.println(a); 처럼 .toString() 함수 생략하고 실행하더라도 Item @Entity 클래스 안에 속하는 .toString() 함수가 알아서 붙여서 해당 함수를 실행해줌.
@@ -87,6 +90,7 @@ public class ItemController {
     @GetMapping("/write")   // URL 작명시 명사가 좋음.
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     String write() {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
+        // throw new Exception();   // 강제로 에러 처리
         return "write.html";   // 웹페이지(list.html) 사용자 웹브라우저 출력
     }
 
@@ -111,7 +115,7 @@ public class ItemController {
     // CASE 1-1: 데이터 2가지만 웹서버로 들어오는 경우 (@RequestParam(name="title") String title, @RequestParam(name="price") Integer price))
     @PostMapping("/add")
         // String writePost(String title, String price) {
-    String writePost(String title, Integer price) {
+    String writePost(String title, Integer price) throws Exception {  // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
         // new Item()으로 생성한 변수에다가 여러가지 정보(데이터)를 채운 다음에
         Item item = new Item();
         item.setTitle(title);
@@ -119,7 +123,10 @@ public class ItemController {
 
         // 리포지토리.save() 함수 소괄호 안에 new Item()으로 생성한 변수를 넣으면 그 정보(데이터)들을 채워서 행을 하나 테이블에 데이터로 추가해준다.
         itemRepository.save(item);
-        return "redirect:/list";
+
+        // throw new Exception();   // 강제로 에러 처리
+
+        return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
 
         // TODO: 아래 주석친 코드 필요시 참고 (2025.08.20 minjae)
         // item.title = title;  // @Entity 클래스 Item 멤버변수 title 접근제한자 private으로 해놔서 .title 사용 불가
@@ -133,14 +140,17 @@ public class ItemController {
     // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
     @GetMapping("/detail/{id}")
     // String detail() {
-    // (힌트) 유저가 URL 파라미터에 마구 입력한 값을 서버에서 쉽게 알 수 있는데 @PathVariable 이라는걸 찾아보면 되겠다.
+    // (힌트) 유저가 URL 파라미터에 마구 입력한 값(id)을 서버에서 쉽게 알 수 있는데 @PathVariable 이라는걸 찾아보면 되겠다. (예) @PathVariable Long id
     // TODO: 아래와 같은 오류 메시지 출력되어 @PathVariable Long id를 detail 웹서버 API 메서드 파라미터에 추가 완료 (2025.08.21 minjae)
     // 오류 메시지 - Cannot resolve symbol 'id'
     // 참고 URL - https://claude.ai/chat/577f41cb-1efb-45f6-ad06-52fb55c9b243
-    String detail(@PathVariable Long id, Model model) {
+    // Thymeleaf 템플릿 엔진 설치한 경우 에러 페이지(error.html) 만들어두면 유저가 URL 파라미터에 "http://localhost:8080/detail/abc" 입력 후 엔터키 -> "abc" 문자열이 Long 타입(자료형)으로 변환이 안되서 오류 발생 -> 에러 페이지(error.html) 웹브라우저 화면에 자동 출력
+    String detail(@PathVariable Long id, Model model) throws Exception {   // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
         // var result = itemRepository.findById(1L);
         // Optional<Item> result = itemRepository.findById(1L);
         Optional<Item> result = itemRepository.findById(id);   // 컬럼 id에 할당된 값(메서드 파라미터 변수 id)과 동일한 행(Raw)을 테이블에서 가져오기
+
+        // throw new Exception();   // 강제로 에러 처리
 
         // Optional타입(자료형)result변수.isPresent() 라고 쓰면 result변수 안에 할당된 값이 뭐가 들어있으면 true를 그 자리에 남겨준다.
         // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
@@ -149,10 +159,10 @@ public class ItemController {
             // 물론 result 변수에 값이 비어있을 수 있기 때문에(변수에 할당된 값이 null인 경우) 그냥 .get() 하고 그러면 웹서버가 에러나고 동작이 멈출 수 있다.
             // 그래서 "만약에 result 변수 안에 할당된 값이 뭐가 있는 경우에만 .get() 해서 사용해라" 이렇게 쓰는게 안전하고 좋다.
             System.out.println(result.get());   // ShopApplication 콘솔창(Console) 출력 결과 - (예) Item(id=1, title=셔츠, price=7000)
-            model.addAttribute("item", result.get());
+            model.addAttribute("data", result.get());   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "data" , 값 result.get() 메서드 addAttribute 사용해서 집어넣기
             return "detail.html";
-        } else {
-            return "~~~";
+        } else {   //  result변수 안에 할당된 값이 들어있지 않고 빈값인 경우 (null)
+            return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
         }
     }
 
@@ -170,6 +180,7 @@ public class ItemController {
     // 참고 사항 - URL 파라미터는 1개 이상 여러개도 사용 가능
     // URL 파라미터 문법 예시 2 - URL 파라미터 2 개만 사용 {id} {id2}
 //    @GetMapping("/detail/{id}/{id2}")
+//    // Thymeleaf 템플릿 엔진 설치한 경우 에러 페이지(error.html) 만들어두면 유저가 URL 파라미터에 "http://localhost:8080/detail/abc" 입력 후 엔터키 -> "abc" 문자열이 Long 타입(자료형)으로 변환이 안되서 오류 발생 -> 에러 페이지(error.html) 웹브라우저 화면에 자동 출력
 //    String detail(@PathVariable Long id, @PathVariable Long id2, Model model) {
 //        return "";
 //    }
@@ -192,6 +203,7 @@ public class ItemController {
 //
 //        // System.out.println(title);
 //        // System.out.println(price);
+//        // throw new Exception();   // 강제로 에러 처리
 //
 //        // var test = new Item();
 //        // test.setTitle(title);
@@ -207,7 +219,7 @@ public class ItemController {
 //    String writePost(@ModelAttribute Item item) {
 //        System.out.println(item);   // ShopApplication 콘솔창(Console) 출력 결과 - Item(id=null, title=aaaa, price=1234)
 //        itemRepository.save(item);
-//        return "redirect:/list";
+//        return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
 //    }
 
 
@@ -233,7 +245,7 @@ public class ItemController {
 //        // 참고 URL - https://claude.ai/chat/8f335633-2258-45f2-b12f-ee216b920c58
 //        // newItem.setPrice((Integer)formData.get("price"));   // Map 자료형 변수 formData에서 key가 "price"인 value 값 정수 변환(Integer) 후 newItem.setTitle() 함수 호출
 //        newItem.setPrice(Integer.valueOf(formData.get("price").toString()));   // Map 자료형 변수 formData에서 key가 "price"인 value 값 문자열 변환(.toString()) 및 정수 변환(Integer.valueOf) 후 newItem.setPrice() 함수 호출
-//
+//        // throw new Exception();   // 강제로 에러 처리
 //        // 리포지토리.save() 함수 소괄호 안에 new Item()으로 생성한 변수를 넣으면 그 정보(데이터)들을 채워서 행을 하나 테이블에 데이터로 추가해준다.
 //        itemRepository.save(newItem);
 //

@@ -40,9 +40,12 @@ public class NoticeController {
 
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     @GetMapping("/notice")   // URL 작명시 명사가 좋음.
-    String notice(Model model) {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
+    // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
+    String notice(Model model) throws Exception {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
         // var result = noticeRepository.findAll();   // DBeaver - MySQL - shop 데이터베이스 - notice 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Notice" Object 형태로 데이터 가져옴)
         List<Notice> result = noticeRepository.findAll();   // 데이터 출력 중인 테이블 클래스 "Notice"으로 List 타입(자료형) 명확하게 해서 DBeaver - MySQL - shop 데이터베이스 - notice 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Notice" Object 형태로 데이터 가져옴)
+
+        // throw new Exception();   // 강제로 에러 처리
 
         model.addAttribute("items", result);   // notice.html에서 th:each="i : ${items}"
         return "notice.html";

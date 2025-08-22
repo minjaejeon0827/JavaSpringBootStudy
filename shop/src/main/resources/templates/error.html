@@ -1,0 +1,24 @@
+<!doctype html>
+<!--  TODO: Thymeleaf 템플릿 엔진 오류 메시지 "Namespace 'th' is not bound" 출력되어 아래처럼 코드 추가(<html xmlns:th="http://www.thymeleaf.org">) (2025.07.28 minjae)  -->
+<!--  참고 URL - https://chatgpt.com/c/6886b0a4-4f98-8010-8034-85384f67f258  -->
+<!--  아래 xmlns:th에서 th는 Thymeleaf의 약자 이다.  -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet">   <!-- 상대경로를 / 부터 시작하면(href="/main.css") static 폴더에 속한 파일들 접근 및 사용가능 -->
+</head>
+<body>
+
+  <div>에러페이지임</div>
+  <p th:text="${status}"></p>
+  <p th:text="${error}"></p>
+  <p th:text="${path}"></p>
+  <p th:text="${message}"></p>
+  <p th:text="${exception}"></p>
+
+</body>
+</html>

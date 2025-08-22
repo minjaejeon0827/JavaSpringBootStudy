@@ -31,18 +31,27 @@
   <div class="detail">
     <h4>상세페이지</h4>
     <img src="https://placehold.co/300">
-    <h4 th:text="${item.title}">금도금 바지</h4>
-    <p th:text="${item.price}">7억</p>
-    <!--  TODO: 아래와 같은 오류 메시지 출력되어 오류 원인 파악 결과 item이 List가 아닌 단일 Item 객체로 확인 -->
-    <!--        하여 thymeleaf 문법 (기존) th:text="${item.get(0).title}" th:text="${item.get(0).price}" -> (변경) th:text="${item.title}" th:text="${item.price}" (2025.08.21 minjae)  -->
-    <!--  오류 메시지: Caused by: org.attoparser.ParseException: Exception evaluating SpringEL expression: "item.get(0).title" (template: "detail.html" - line 19, col 9) -->
-    <!--  오류 메시지 2: Caused by: org.thymeleaf.exceptions.TemplateProcessingException: Exception evaluating SpringEL expression: "item.get(0).title" (template: "detail.html" - line 19, col 9) -->
-    <!--  참고 URL - https://claude.ai/chat/7580a329-4794-45b9-9035-a5bb5a8990bb  -->
-    <!--  <h4 th:text="${item.get(0).title}">금도금 바지</h4>  -->
-    <!--  <p th:text="${item.get(0).price}">7억</p>  -->
-    <!--  <h4>금도금 바지</h4>  -->
-    <!--  <p>7억</p>  -->
+    <!--  <h4 th:text="${data}">테스트</h4> -->  <!--  화면 출력 예시 - Item(id=3, title=자켓, price=6000)  -->
+    <h4 th:text="${data.title}">금도금 바지</h4>
+    <p th:text="${data.price + '원'}">7억</p>
   </div>
+
+<!--  TODO: 아래 주석친 코드 필요시 참고 (2025.08.22 minjae)  -->
+<!--  <div class="detail">-->
+<!--    <h4>상세페이지</h4>-->
+<!--    <img src="https://placehold.co/300">-->
+<!--    <h4 th:text="${data.title}">금도금 바지</h4>-->
+<!--    <p th:text="${data.price}">7억</p>-->
+<!--    &lt;!&ndash;  TODO: 아래와 같은 오류 메시지 출력되어 오류 원인 파악 결과 data이 List가 아닌 단일 Item 클래스 객체 data로 확인 &ndash;&gt;-->
+<!--    &lt;!&ndash;        하여 thymeleaf 문법 (기존) th:text="${data.get(0).title}" th:text="${data.get(0).price}" -> (변경) th:text="${data.title}" th:text="${data.price}" (2025.08.21 minjae)  &ndash;&gt;-->
+<!--    &lt;!&ndash;  오류 메시지: Caused by: org.attoparser.ParseException: Exception evaluating SpringEL expression: "data.get(0).title" (template: "detail.html" - line 19, col 9) &ndash;&gt;-->
+<!--    &lt;!&ndash;  오류 메시지 2: Caused by: org.thymeleaf.exceptions.TemplateProcessingException: Exception evaluating SpringEL expression: "data.get(0).title" (template: "detail.html" - line 19, col 9) &ndash;&gt;-->
+<!--    &lt;!&ndash;  참고 URL - https://claude.ai/chat/7580a329-4794-45b9-9035-a5bb5a8990bb  &ndash;&gt;-->
+<!--    &lt;!&ndash;  <h4 th:text="${data.get(0).title}">금도금 바지</h4>  &ndash;&gt;-->
+<!--    &lt;!&ndash;  <p th:text="${data.get(0).price}">7억</p>  &ndash;&gt;-->
+<!--    &lt;!&ndash;  <h4>금도금 바지</h4>  &ndash;&gt;-->
+<!--    &lt;!&ndash;  <p>7억</p>  &ndash;&gt;-->
+<!--  </div>-->
 
 </body>
 </html>
