@@ -2738,6 +2738,236 @@ Thymeleaf 템플릿 엔진을 build.gradle 파일에 설치해서 쓰는 경우�
 물론 이거 말고도 다른 상황들이 많이 있을 수 있기 때문에
 항상 악성유저처럼 사이트를 이용해보고 그걸 다 막는 코드를 작성해보는 것 부터 시작하면 된다.
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 2
+18강 - REST API의 예외처리 방법
+
+타임리프(Thymeleaf) 템플릿 쓰는경우엔 에러시 자동으로 에러페이지(error.html)로 이동해주기 때문에
+이게 에러처리 끝이라고 했다.
+근데 웹서버에서 데이터만 보내주는 REST API들을 만드는경우에는
+html 에러페이지(error.html)를 보내봤자 아무 의미가 없다.
+웹서버와 유저가 데이터만 주고받는 관계라서 html 보내봤자 열지도 못함
+그래서 다른 방법이 필요하다.
+
+* try catch
+
+@GetMapping("/detail/{id}")
+@ResponseBody
+String detail() {
+    try {
+      에러날 수 있는 코드~~
+    } catch(Exception e){
+      return "에러남 ㅅㄱ";
+    }
+}
+
+try catch가 뭐냐면
+"try 안에 있는 코드에서 에러가 나면 catch 안에 있는 코드 실행해주세요~" 라는 뜻의 간단한 문법이다.
+그래서 에러가 날 수 있는 코드를 try로 감싸고 (에러날 수 있는 코드~~)
+에러날 때 실행할 코드(return "에러남 ㅅㄱ";)는 catch 안에 적으면 에러상황에 대처가 가능하다.
+
+예를 들어 DB 입출력하는 코드 실행시 가끔 에러가 날 수 있기 때문에
+try로 감싸고 catch 안에는 에러나는 경우에 뭐 유저에게 메세지를 주거나 그러면 되겠군요.
+
+@GetMapping("/detail/{id}")
+@ResponseBody
+String detail() {
+    try {
+      throw new Exception("이런저런에러");
+    } catch(Exception e){
+      System.out.println(e.getMessage());
+      return "에러남 ㅅㄱ";
+    }
+}
+
+- 에러를 강제로 발생시켜보고 싶으면 throw new Exception() 이런 코드 쓰면 강제로 에러발생이 가능하다.
+- catch 안에서 e라는 파라미터에 에러이유가 담겨있어서 필요하면 사용가능하다.
+진짜 에러시 catch가 동작 잘 하는지 테스트도 해보자.
+그래서 웹서버와 유저가 데이터만 주고받는 REST API 만드는 경우엔 에러페이지(error.html)가 안뜨니 이런걸 사용해도 되겠다.
+
+실제 배포후에는 에러시 이거저거 출력보다는 로깅(logging) 라이브러리 쓰는게 낫다.
+(나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+
+* throws Exception
+
+@GetMapping("/detail/{id}")
+@ResponseBody
+String detail() throws Exception {
+    throw new Exception("이런저런에러");
+}
+
+참고로 함수(detail()) 안에서 에러를 뱉는 코드(throw new Exception("이런저런에러");)가 있는데 try catch를 써서 예외처리를 안했다면
+throws Exception이라고 함수뒤에 꼭 써줘야한다. (String detail() throws Exception { ... })
+안하면 에디터가가 화냄
+근데 별 기능은 없고 여기서 에러뱉을 수 있다는 경고문같은 역할일 뿐이다.
+"에러 뱉어서 코드가 정지될 수 있으니 언젠간 try catch를 쓰는게 좋음"이라는 뜻으로 이해하면 되겠다.
+
+* ResponseEntity
+
+@GetMapping("/detail/{id}")
+ResponseEntity<String> detail() {  // (참고) ResponseEntity<T>를 쓰는 경우 굳이 @ResponseBody를 붙일 필요 없습니다. 한글 보낼 때 안깨지는 것도 편리함
+    try {
+      throw new Exception("이런저런에러");
+    } catch(Exception e){
+      return ResponseEntity.status(에러코드).body("에러이유");
+    }
+}
+
+REST API에서 에러가 났을 때 문자만 달랑보내기보다는 더 정확하게 에러 코드도 기입해서 보내줄 수 있다. (return ResponseEntity.status(에러코드).body("에러이유");)
+위처럼 ResponseEntity라는걸 쓰면 에러코드는 뭔지, 에러이유는 뭔지 맘대로 작성해서 보내줄 수 있다.
+(return ResponseEntity.status(에러코드).body("에러이유");)
+그럼 프론트엔드에서 웹서버 API 함수에게 요청날릴 때 에러나는 경우 에러 원인이 뭔지 빠르게 파악이 가능하다.
+
+.status() 안에 에러코드를 숫자로 입력하면 되는데
+- 유저가 잘못해서 에러나는거면 400
+- 서버가 잘못해서 에러나는거면 500
+- 에러없이 정상작동하는 경우엔 200
+을 관습적으로 넣어준다.
+실은 에러났을 때만 .status() 안에 에러코드를 기재하는 건 아니고 그냥 평소에 REST API 만들 때도 .status() 안에 성공코드(200) 기재후에 데이터 보내주면 좋다.
+
+HTTP status code 테이블
+참고 URL - https://claude.ai/chat/7852453f-d9b0-4466-a89a-e65df3a40a74
+| 200 | Success       | OK                     |
+| 201 | Success       | Created                |
+| 301 | Redirection   | Moved Permanently      |
+| 302 | Redirection   | Found                  |
+| 304 | Redirection   | Not Modified           |
+| 400 | Client Error  | Bad Request            |
+| 401 | Client Error  | Unauthorized           |
+| 403 | Client Error  | Forbidden              |
+| 404 | Client Error  | Not Found              |
+| 500 | Server Error  | Internal Server Error  |
+| 501 | Server Error  | Not Implemented        |
+| 503 | Server Error  | Service Unavailable    |
+| 504 | Server Error  | Gateway Timeout        |
+
+▲ 에러코드라고 했지만 정확히 말하면 HTTP status code인데 이런 것들이 있다.
+그래서 상황에 맞는거 찾아서 집어넣으면 되겠다.
+
+ResponseEntity.status(HttpStatus.NOT_FOUND).body("에러남");
+
+HTTP status code 숫자찾기 귀찮으면 에러코드 모아둔 클래스(HttpStatus)가 하나 있는데 거기서 점찍어서 뽑아써도 된다. (예) HttpStatus.NOT_FOUND
+
+예를 들어 데이터나 웹페이지를 못찾는 경우 404를 기입하는게 관습인데
+404인지 뭔지 까먹었으면 .NOT_FOUND 찾으면 되는 것이다. (예) HttpStatus.NOT_FOUND
+근데 초보가 어찌알겠음 그냥 표 보거나 400, 500, 200 중에 골라쓰면 된다.
+
+(참고) ResponseEntity<T>를 쓰는 경우 굳이 @ResponseBody를 붙일 필요 없다. 한글 보낼 때 안깨지는 것도 편리함
+
+* @ExceptionHandler
+
+try catch 써봤자 try 안에 있는 코드만 에러나는걸 처리할 수 있을 뿐이고
+URL 주소 이상하게 입력하거나 그런 에러는 처리하지 못하기 때문에
+try catch 쓰는 것 보다는 spring boot가 제공하는 간편한 예외처리 기능하나가 있다.
+
+@ExceptionHandler(Exception.class)
+public ResponseEntity<String> exceptionHandler() {
+  return ResponseEntity.status().body("");
+}
+
+컨트롤러 클래스 (예) ItemController.java 에 속하는 웹서버 API 함수들과 나란하게
+@ExceptionHandler 붙은 함수(exceptionHandler())를 컨트롤러 클래스 안에 작성할 수 있는데
+이러면 같은 컨트롤러 클래스 안에 있는 웹서버 API 함수 들에서 에러가 나면 @ExceptionHandler 안에 있는 코드를 실행해줍니다.
+여기서 return써서 유저에게 메세지보내거나 그러면 된다.
+편리하죠?
+
+* @ControllerAdvice
+
+실은 안편리하다.
+컨트롤러 클래스 (예) ItemController.java 가 100만개 있으면 직접 그 파일마다 이 코드 넣는게 귀찮아지겠군요.
+그래서 한 번에 처리할 수 있는 방법도 있는데
+
+@ControllerAdvice
+public class MyExceptionHandler {
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<String> handler() {
+    return ResponseEntity.status(400).body("모든 컨트롤러 에러시 발동");
+  }
+
+}
+
+아무데나 파일하나 만들어보자. 저는 MyExceptionHandler.java 라고 이름지어봤음
+@ControllerAdvice를 예외처리 클래스(MyExceptionHandler) 상단에 붙이고
+해당 예외처리 클래스(MyExceptionHandler) 안에 아까 그 @ExceptionHandler를 넣는것이다.
+이러면 웹 프로젝트 폴더 (예) shop 안에 속한 모든 컨트롤러 클래스 (예) ItemController.java 등등... 에서 에러가 나는 경우
+여기 있는 코드(public ResponseEntity<String> handler() { ... })가 대신 실행된다.
+진짜 그런가 실험해보자.
+
+참고로 개별 컨트롤러 (예) ItemController.java 에도 @ExceptionHandler를 만들어놨고
+@ControllerAdvice 붙인 예외처리 클래스(MyExceptionHandler)에도 @ExceptionHandler를 만들어놨으면
+당연히 개별 컨트롤러 (예) ItemController.java 에 있는 @ExceptionHandler 코드가 더 우선권이 있다. (함수내 지역변수 우선 적용과 비슷함.)
+
+* 특정에러에만 실행하기
+
+@ControllerAdvice
+public class MyExceptionHandler {
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<String> handler() {
+    return ResponseEntity.status(400).body("특정 에러시 발동");
+  }
+
+}
+
+MethodArgumentTypeMismatchException.class 이런 이름의 에러가 발생시에는 다른 코드를 실행하고 싶다면
+위처럼 에러 이름을 @ExceptionHandler() 안에 적으면 된다. (예) @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+예를 들어 URL에 숫자말고 문자를 입력하면 저런 이름의 에러가 뜨는데
+에러 이름은 실행창(콘솔창)에서 베껴와봤다.
+
+
+오늘의 결론 :
+웹서버만들 때는 예외상황과 에러상황에 대처하는 코드를 안적으면 행복했던 코딩 인생이 금방 끝난다.
+악성 유저가 되어서 이거저거 상황을 만들어보고 그걸 대처하는 코드를 작성하자.
+Thymeleaf 템플릿 엔진 사용시엔 에러나는거 처리는 에러페이지(error.html) 만들면 끝인데
+웹서버와 유저가 데이터만 주고받는 REST API 만들 때는 에러나는거 처리는 @ControllerAdvice 만들어놓는게 편리함
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,7 @@
 package com.apple.shop;  // 파일 상단에 package 파일경로;(com 폴더 -> apple 폴더 -> shop 폴더) 라고 적어줘야 다른 파일에서도 여기 있던 코드를 사용가능하다.
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -138,33 +139,129 @@ public class ItemController {
 
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    // @PathVariable 사용 예시 1
+    // try - catch 사용 예시 1
     @GetMapping("/detail/{id}")
-    // String detail() {
-    // (힌트) 유저가 URL 파라미터에 마구 입력한 값(id)을 서버에서 쉽게 알 수 있는데 @PathVariable 이라는걸 찾아보면 되겠다. (예) @PathVariable Long id
-    // TODO: 아래와 같은 오류 메시지 출력되어 @PathVariable Long id를 detail 웹서버 API 메서드 파라미터에 추가 완료 (2025.08.21 minjae)
-    // 오류 메시지 - Cannot resolve symbol 'id'
-    // 참고 URL - https://claude.ai/chat/577f41cb-1efb-45f6-ad06-52fb55c9b243
-    // Thymeleaf 템플릿 엔진 설치한 경우 에러 페이지(error.html) 만들어두면 유저가 URL 파라미터에 "http://localhost:8080/detail/abc" 입력 후 엔터키 -> "abc" 문자열이 Long 타입(자료형)으로 변환이 안되서 오류 발생 -> 에러 페이지(error.html) 웹브라우저 화면에 자동 출력
-    String detail(@PathVariable Long id, Model model) throws Exception {   // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
-        // var result = itemRepository.findById(1L);
-        // Optional<Item> result = itemRepository.findById(1L);
-        Optional<Item> result = itemRepository.findById(id);   // 컬럼 id에 할당된 값(메서드 파라미터 변수 id)과 동일한 행(Raw)을 테이블에서 가져오기
-
-        // throw new Exception();   // 강제로 에러 처리
-
-        // Optional타입(자료형)result변수.isPresent() 라고 쓰면 result변수 안에 할당된 값이 뭐가 들어있으면 true를 그 자리에 남겨준다.
-        // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
-        if (result.isPresent()){
-            // Optional 자료(데이터)는 .get() 붙여야 안에 들어있는 자료(데이터)가 나온다. (result.get())
-            // 물론 result 변수에 값이 비어있을 수 있기 때문에(변수에 할당된 값이 null인 경우) 그냥 .get() 하고 그러면 웹서버가 에러나고 동작이 멈출 수 있다.
-            // 그래서 "만약에 result 변수 안에 할당된 값이 뭐가 있는 경우에만 .get() 해서 사용해라" 이렇게 쓰는게 안전하고 좋다.
-            System.out.println(result.get());   // ShopApplication 콘솔창(Console) 출력 결과 - (예) Item(id=1, title=셔츠, price=7000)
-            model.addAttribute("data", result.get());   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "data" , 값 result.get() 메서드 addAttribute 사용해서 집어넣기
-            return "detail.html";
-        } else {   //  result변수 안에 할당된 값이 들어있지 않고 빈값인 경우 (null)
-            return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+//    ResponseEntity<String> detail(@PathVariable Long id, Model model) {
+    String detail(@PathVariable Long id, Model model) {
+      try {
+        Optional<Item> result = itemRepository.findById(id);
+        if (result.isPresent()) {
+          model.addAttribute("data", result.get());
+          return "detail.html";
+        } else {
+          return "redirect:/list";
         }
+      } catch(Exception e) {
+          System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+          return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+          // return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+          // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+          // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+      }
     }
+
+    // 같은 컨트롤러 클래스 (ItemController.java) 안에 속한 모든 웹서버 API 함수들에서 에러 발생시
+    // 대신 @ExceptionHandler(Exception.class) 붙인 handler() 함수 안의 코드 실행해줌.
+    // 단점 - 컨트롤러 클래스 (예) ItemController.java 가 100만개 있으면 직접 그 파일마다 이 코드(@ExceptionHandler(Exception.class)) 넣는게 귀찮아지겠군요.
+//    @ExceptionHandler(Exception.class)
+//    public void handler() {
+//      return ResponseEntity.status().body();
+//    }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    // @PathVariable 사용 예시 2
+    // try - catch 사용 예시 2
+//    @GetMapping("/detail2/{id}")
+//    ResponseEntity<String> detail2(@PathVariable Long id, Model model) {
+//    // String detail(@PathVariable Long id, Model model) {
+//        try {
+//            Optional<Item> result = itemRepository.findById(id);
+//            if (result.isPresent()) {
+//                model.addAttribute("data", result.get());
+//                // return "detail.html";
+//            } else {
+//                // return "redirect:/list";
+//            }
+//        } catch(Exception e) {
+//            System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+//            // return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+//            // return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//            // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//        }
+//    }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    // @PathVariable 사용 예시 3
+    // try - catch 사용 예시 3
+    // ResponseEntity<String> 사용 예시 3
+//    @GetMapping("/test/{id}")
+//    ResponseEntity<String> test(@PathVariable Long id, Model model) {
+//        try {
+//            throw new Exception("이런저런에러임");  // 에러 강제 발생
+//            throw new Exception();  // 에러 강제 발생
+//        } catch(Exception e) {
+//            System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+//            return "redirect:/list";  // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+//            return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//            // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//        }
+//    }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    // @PathVariable 사용 예시 4
+    // try - catch 사용 예시 4
+    // ResponseEntity<String> 사용 예시 4
+    @GetMapping("/test2/{id}")
+    ResponseEntity<String> test2(@PathVariable Long id, Model model) throws Exception {  // 함수 test 뒤에 throws Exception 추가시 해당 함수는 try-catch 없이도 예외(에러)처리 가능
+//        throw new Exception("이런저런에러임");  // 에러 강제 발생
+        throw new Exception();  // 에러 강제 발생
+//        try {
+//
+//        } catch(Exception e) {
+//            System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+//            // return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+//            return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//            // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//        }
+    }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    // @PathVariable 사용 예시 2
+//    @GetMapping("/detail/{id}")
+//    // String detail() {
+//    // (힌트) 유저가 URL 파라미터에 마구 입력한 값(id)을 서버에서 쉽게 알 수 있는데 @PathVariable 이라는걸 찾아보면 되겠다. (예) @PathVariable Long id
+//    // TODO: 아래와 같은 오류 메시지 출력되어 @PathVariable Long id를 detail 웹서버 API 메서드 파라미터에 추가 완료 (2025.08.21 minjae)
+//    // 오류 메시지 - Cannot resolve symbol 'id'
+//    // 참고 URL - https://claude.ai/chat/577f41cb-1efb-45f6-ad06-52fb55c9b243
+//    // Thymeleaf 템플릿 엔진 설치한 경우 에러 페이지(error.html) 만들어두면 유저가 URL 파라미터에 "http://localhost:8080/detail/abc" 입력 후 엔터키 -> "abc" 문자열이 Long 타입(자료형)으로 변환이 안되서 오류 발생 -> 에러 페이지(error.html) 웹브라우저 화면에 자동 출력
+//    String detail(@PathVariable Long id, Model model) throws Exception {   // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
+//        // var result = itemRepository.findById(1L);
+//        // Optional<Item> result = itemRepository.findById(1L);
+//        Optional<Item> result = itemRepository.findById(id);   // 컬럼 id에 할당된 값(메서드 파라미터 변수 id)과 동일한 행(Raw)을 테이블에서 가져오기
+//
+//        // throw new Exception();   // 강제로 에러 처리
+//
+//        // Optional타입(자료형)result변수.isPresent() 라고 쓰면 result변수 안에 할당된 값이 뭐가 들어있으면 true를 그 자리에 남겨준다.
+//        // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
+//        if (result.isPresent()){
+//            // Optional 자료(데이터)는 .get() 붙여야 안에 들어있는 자료(데이터)가 나온다. (result.get())
+//            // 물론 result 변수에 값이 비어있을 수 있기 때문에(변수에 할당된 값이 null인 경우) 그냥 .get() 하고 그러면 웹서버가 에러나고 동작이 멈출 수 있다.
+//            // 그래서 "만약에 result 변수 안에 할당된 값이 뭐가 있는 경우에만 .get() 해서 사용해라" 이렇게 쓰는게 안전하고 좋다.
+//            System.out.println(result.get());   // ShopApplication 콘솔창(Console) 출력 결과 - (예) Item(id=1, title=셔츠, price=7000)
+//            model.addAttribute("data", result.get());   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "data" , 값 result.get() 메서드 addAttribute 사용해서 집어넣기
+//            return "detail.html";
+//        } else {   //  result변수 안에 할당된 값이 들어있지 않고 빈값인 경우 (null)
+//            return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+//        }
+//    }
 
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.

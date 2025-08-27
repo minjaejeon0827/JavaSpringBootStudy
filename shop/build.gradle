@@ -7,6 +7,13 @@
 // thymeleaf 템플릿 엔진 역할?
 // thymeleaf 템플릿 엔진은 웹서버의 데이터를 html에 집어넣어주는걸 도와주는 외부 라이브러리이다.
 
+// TODO: Intellij -> build 폴더 -> libs 폴더 -> jar 파일 생기지 않는 경우 아래처럼 진행하기 (2025.08.26 minjae)
+// 참고 URL - https://dream-and-develop.tistory.com/410
+//       1. 화면 우측 상단 버튼 "Gradle" 클릭
+//       2. shop 폴더 -> build 폴더 하단 -> 순서대로 clean 클릭 -> build 클릭 -> jar 클릭
+//       3. jar 파일(shop-0.0.1-SNAPSHOT.jar) 생성 완료
+//       참고 - jar 파일 경로: "D:\minjae\JavaSpringBootStudy\shop\build\libs" 폴더 -> shop-0.0.1-SNAPSHOT.jar
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.7'          // Spring boot 버전
@@ -17,7 +24,8 @@ group = 'com.apple'          // 회사 이름
 version = '0.0.1-SNAPSHOT'   // 프로젝트 버전
 
 java {
-	sourceCompatibility = '17'
+//	sourceCompatibility = '17'
+	sourceCompatibility = '24'
 
 //	toolchain {
 //		// TODO: JDK 버전(languageVersion) (기존) JavaLanguageVersion.of(17) -> (변경) JavaLanguageVersion.of(24) 구현 (2025.07.17 minjae)
