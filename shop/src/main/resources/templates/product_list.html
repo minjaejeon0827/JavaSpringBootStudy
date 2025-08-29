@@ -1,0 +1,46 @@
+<!doctype html>
+<!--  TODO: Thymeleaf 템플릿 엔진 오류 메시지 "Namespace 'th' is not bound" 출력되어 아래처럼 코드 추가(<html xmlns:th="http://www.thymeleaf.org">) (2025.07.28 minjae)  -->
+<!--  참고 URL - https://chatgpt.com/c/6886b0a4-4f98-8010-8034-85384f67f258  -->
+<!--  아래 xmlns:th에서 th는 Thymeleaf의 약자 이다.  -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet">   <!-- 상대경로를 / 부터 시작하면(href="/main.css") static 폴더에 속한 파일들 접근 및 사용가능 -->
+</head>
+<body>
+
+  <!--  (다른 html 파일 - (예) product_list.html)에서 th:replace="~{파일경로 :: fragment이름}" 이렇게 쓰면 (th:replace="~{nav.html :: navbar}")
+        그 파일경로에 있던 th:fragment를 가져다가 첨부해준다. (th:fragment="navbar")
+        그래서 아래 처럼 작성하면 div태그 내용물을 th:fragment="navbar" 붙은 html 덩어리로 갈아치워준다. (th:replace="~{nav.html :: navbar}")  -->
+  <!--  (참고1) th:insert 사용하면 div를 갈아치우는게 아니라 div 안에 붙여넣어준다. 근데 갈아치우는게 일반적임  -->
+  <!--  (참고2) th:fragment 정의는 한 파일에 여러번 사용해도 된다. (예) - nav.html 파일 안에 여러번 사용 가능 (예) - nav.html 파일 안에 여러번 사용 가능(th:fragment="navbar" / th:fragment="navbar2")  -->
+  <!--  (참고3) html 덩어리((예) nav.html)로 변수나 데이터같은걸 전송해줄 수도 있다. th:replace="nav.html :: navbar('데이터1', '데이터2')"  -->
+
+  <!--  TODO: 아래와 같은 오류 메시지가 출력되어 코드 변경 처리함. (2025.08.20 minjae)  -->
+  <!--        (기존) <div th:replace="~{ nav:html :: navbar }"></div> -> (변경) <div th:replace="~{ nav.html::navbar }"></div>  -->
+  <!--  오류 메시지 - Error resolving template [nav:html], template might not exist or might not be accessible  -->
+  <!--  오류 원인 - product_list.html 템플릿의 20번째 줄에서 nav:html 템플릿을 찾을 수 없다는 오류입니다.  -->
+  <!--  참고 URL - https://claude.ai/chat/3778a2ae-9c4a-4c20-94b4-f8d4d76be8e8  -->
+  <!--  <div th:replace="~{ nav:html :: navbar }"></div>  -->
+  <div th:replace="~{ nav.html::navbar }"></div>
+
+  <div class="card" th:each="i : ${items}">
+    <img src="https://placehold.co/300">
+
+    <div>
+        <!--  <h4 th:text="${i.name}">바지</h4>  -->
+        <!--  <a href="@{'/product_detail/' + ${i.id} }">링크</a>  -->
+        <!--  보통은 서버에서 보낸 변수를 넣고 싶으면 ${ } 안에 넣으면 되는데 근데 href 속성 안에는 Thymeleaf 템플릿 엔진 사용해서 @{ } 부터 시작하면 된다. (예) href="@{'/product_detail/' + ${i.id} }"  -->
+        <a th:href="@{'/product_detail/' + ${i.id} }">
+            <h4 th:text="${i.name}">바지</h4>
+        </a>
+        <p th:text="${i.price + '원'}">100억</p>
+    </div>
+  </div>
+
+</body>
+</html>

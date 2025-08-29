@@ -48,7 +48,7 @@ public class Item {
   // 롬복(Lombok) 라이브러리 사용 안 하고 setter 함수 직접 구현
   // public void setPrice(Integer price) {
   //  // if 누가 Integer 넣으면 Long으로 바꿔줘라
-  //  this.title = title;
+  //  this.price = price;
   // }
 
   // 롬복(Lombok) 라이브러리 사용 안 하고 toString 함수 직접 구현

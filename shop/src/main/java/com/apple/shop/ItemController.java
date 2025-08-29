@@ -1,5 +1,6 @@
 package com.apple.shop;  // 파일 상단에 package 파일경로;(com 폴더 -> apple 폴더 -> shop 폴더) 라고 적어줘야 다른 파일에서도 여기 있던 코드를 사용가능하다.
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,16 @@ public class ItemController {
 
     // 2. DB입출력 원하는 클래스에서 repository 등록
     private final ItemRepository itemRepository;  // 변수 itemRepository에는 new ItemRepository() 들어있음 (DB입출력문법(함수)(repository.입출력문법함수();) 잔뜩 들어있음.)
+    // 이 함수들 쓰고싶은 곳에 가서 변수로 등록하고 (@RequiredArgsConstructor 필요) (예) ItemController.java -> ItemController 클래스 -> private final ItemService itemService;
+    // 해당 변수(itemService) 안에 new ItemService();를 넣어줌.
+    private final ItemService itemService;
+
+    // 클래스 상단에 Lombok 문법 @RequiredArgsConstructor 사용 안 하는 경우 아래처럼 ItemController 생성자 직접 구현 해야함.
+    // @Autowired
+    // public ItemController(ItemRepository itemRepository, ItemService itemService) {
+    //     this.itemRepository = itemRepository;
+    //     this.itemService = itemService;
+    // }
 
     // Lombok 문법 @RequiredArgsConstructor 사용 하지 않는 경우 아래 코드 처럼 constructor(생성자 - ItemController) 사용 필수
     // constructor(생성자 - ItemController) 자동 생성 방법
@@ -46,10 +57,11 @@ public class ItemController {
     String list(Model model) throws Exception {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
 
         // var result = itemRepository.findAll();   // DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
-        List<Item> result = itemRepository.findAll();   // 데이터 출력 중인 테이블 클래스 "Item"으로 List 타입(자료형) 명확하게 해서 DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
+        // List<Item> result = itemRepository.findAll();   // 데이터 출력 중인 테이블 클래스 "Item"으로 List 타입(자료형) 명확하게 해서 DBeaver - MySQL - shop 데이터베이스 - item 데이터테이블에 저장된 모든 데이터 꺼내주세요~ (List 타입(자료형) []으로 데이터 출력 중인 테이블 클래스 "Item" Object 형태로 데이터 가져옴)
+        List<Item> result = itemService.getItems();   // 아이템 리스트 가져오기
 
         model.addAttribute("items", result);   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "items" , 값 result 메서드 addAttribute 사용해서 집어넣기
-        // model.addAttribute("name", "비싼 바지");  // html 파일에 보내고 싶은 웹서버데이터 이름 "name", 값 "비싼 바지" 메서드 addAttribute 사용해서 집어넣기
+        // model.addAttribute("title", "비싼 바지");  // html 파일에 보내고 싶은 웹서버데이터 이름 "title", 값 "비싼 바지" 메서드 addAttribute 사용해서 집어넣기
 
         // throw new Exception();   // 강제로 에러 처리
 
@@ -90,9 +102,9 @@ public class ItemController {
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     @GetMapping("/write")   // URL 작명시 명사가 좋음.
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
-    String write() {  // Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용하기 위해 파라미터 Model model 추가
+    String write() {
         // throw new Exception();   // 강제로 에러 처리
-        return "write.html";   // 웹페이지(list.html) 사용자 웹브라우저 출력
+        return "write.html";   // 웹페이지(write.html) 사용자 웹브라우저 출력
     }
 
     // 상품추가 기능?
@@ -117,17 +129,45 @@ public class ItemController {
     @PostMapping("/add")
         // String writePost(String title, String price) {
     String writePost(String title, Integer price) throws Exception {  // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
+        itemService.saveItem(title, price);  // 원하는 곳에서 변수.함수() 쓰면 된다. (예) ItemController.java -> ItemController 클래스 -> 웹서버 API 함수 writePost -> itemService.saveItem(title, price);
+        return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+
+        // 근데 new ItemService().saveItem() 해서 사용하면 뭔가 비효율적인 것 같지 않습니까
+        // 왜냐면 /add로 요청이 들어올 때 마다 매번 new 키워드로 object를 뽑아야하니까요.
+        // 그게 싫으면 그냥 object를 한 번 뽑고 그걸 변수에 저장해뒀다가 계속 재사용하는 식으로 코드짜도 된다. (싱글톤 패턴 방식)
+        // 근데 그걸 여러분이 직접 (싱글톤 패턴 방식) 코드로 구현해도 되겠지만 스프링에게 시킬 수도 있다.
+        // new ItemService().saveItem(title, price);  // 두 클래스 간 (ItemController, ItemService) 커플링(연결고리) 발생하는 코드는 비효율적이다.
+        // 3-step이 필요한데
+
+        // 1. 클래스에 @Service 붙여놓고
+        // (예)
+        // @Service
+        // @RequiredArgsConstructor - Lombok 문법
+        // public class ItemService {
+        //    private final ItemRepository itemRepository;
+
+        //    public void saveItem(String title, Integer price){
+        //        Item item = new Item();
+        //        item.setTitle(title);
+        //        item.setPrice(price);
+        //        itemRepository.save(item);
+        //    }
+        // }
+
+        // 2. 이 함수들 쓰고싶은 곳에 가서 변수로 등록하고 (@RequiredArgsConstructor 필요) (예) ItemController.java -> ItemController 클래스 -> private final ItemService itemService;
+        // 3. 원하는 곳에서 변수.함수() 쓰면 된다. (예) ItemController.java -> ItemController 클래스 -> 웹서버 API 함수 writePost -> itemService.saveItem(title, price);
+
         // new Item()으로 생성한 변수에다가 여러가지 정보(데이터)를 채운 다음에
-        Item item = new Item();
-        item.setTitle(title);
-        item.setPrice(price);
+        // Item item = new Item();
+        // item.setTitle(title);
+        // item.setPrice(price);
 
         // 리포지토리.save() 함수 소괄호 안에 new Item()으로 생성한 변수를 넣으면 그 정보(데이터)들을 채워서 행을 하나 테이블에 데이터로 추가해준다.
-        itemRepository.save(item);
+        // itemRepository.save(item);
 
         // throw new Exception();   // 강제로 에러 처리
 
-        return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+        // return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
 
         // TODO: 아래 주석친 코드 필요시 참고 (2025.08.20 minjae)
         // item.title = title;  // @Entity 클래스 Item 멤버변수 title 접근제한자 private으로 해놔서 .title 사용 불가
@@ -145,7 +185,9 @@ public class ItemController {
 //    ResponseEntity<String> detail(@PathVariable Long id, Model model) {
     String detail(@PathVariable Long id, Model model) {
       try {
-        Optional<Item> result = itemRepository.findById(id);
+        // Optional<Item> result = itemRepository.findById(id);
+        Optional<Item> result = itemService.getItemById(id);
+        // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
         if (result.isPresent()) {
           model.addAttribute("data", result.get());
           return "detail.html";
@@ -178,6 +220,7 @@ public class ItemController {
 //    // String detail(@PathVariable Long id, Model model) {
 //        try {
 //            Optional<Item> result = itemRepository.findById(id);
+//            // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
 //            if (result.isPresent()) {
 //                model.addAttribute("data", result.get());
 //                // return "detail.html";
