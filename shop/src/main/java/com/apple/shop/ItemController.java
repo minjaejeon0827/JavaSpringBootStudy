@@ -186,10 +186,10 @@ public class ItemController {
     String detail(@PathVariable Long id, Model model) {
       try {
         // Optional<Item> result = itemRepository.findById(id);
-        Optional<Item> result = itemService.getItemById(id);
+        Optional<Item> result = itemService.getItemById(id);   // 컬럼 id에 할당된 값(메서드 파라미터 변수 id)과 동일한 행(Raw)을 테이블에서 가져오기
         // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
         if (result.isPresent()) {
-          model.addAttribute("data", result.get());
+          model.addAttribute("data", result.get());   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "data" , 값 result.get() 메서드 addAttribute 사용해서 집어넣기
           return "detail.html";
         } else {
           return "redirect:/list";
@@ -202,6 +202,63 @@ public class ItemController {
           // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
       }
     }
+
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
+    @GetMapping("/edit/{id}")
+    String edit(@PathVariable Long id, Model model) {
+      try {
+        // Optional<Item> result = itemRepository.findById(id);
+        // Optional<Item> result = itemService.getItemById(1L);
+        Optional<Item> result = itemService.getItemById(id);   // 컬럼 id에 할당된 값(메서드 파라미터 변수 id)과 동일한 행(Raw)을 테이블에서 가져오기
+        System.out.println(result);
+
+        // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
+        if (result.isPresent()) {
+            model.addAttribute("data", result.get());   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "data" , 값 result.get() 메서드 addAttribute 사용해서 집어넣기
+            return "edit.html";
+        } else {
+            // 힌트2. 서버에서 어떤 정보가 필요한데 정보가 없다면
+            // 유저에게 보내라고하거나 DB에서 뽑아보거나 택1 하면 되겠다.
+            return "redirect:/list";
+        }
+      } catch (Exception e) {
+          System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+          return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+          // return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+          // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+          // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+      }
+    }
+
+    // TODO: 글수정 기능 웹서버 API 함수 updatePost 구현 (2025.09.02 minjae)
+    // 참고 URL - https://claude.ai/chat/58e6617a-58e6-4f8a-a581-1f137c4ce8b0
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // CASE 2-1: 데이터 여러개가 웹서버로 들어오는 경우
+    // @ModelAttribute 사용해서 유저가 <input> 태그에 정보(데이터) 입력 후 웹서버 API 함수로 보낸 데이터를 @Entity 클래스 객체(object)로 쉽게 변환 처리
+    @PostMapping("/update")
+    // String updatePost(Long id, String title, Integer price) {
+    String updatePost(@ModelAttribute Item item) {
+      try {
+        System.out.println(item);
+        itemService.saveItem(item);
+
+        // System.out.println(item);   // ShopApplication 콘솔창(Console) 출력 결과 - Item(id=null, title=aaaa, price=1234)
+        // itemRepository.save(item);
+        // itemService.saveItem(item);
+        // return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+
+      } catch (Exception e) {
+          System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+          // return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+          // return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+          // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+          // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+      } finally {
+          return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+      }
+    }
+
 
     // 같은 컨트롤러 클래스 (ItemController.java) 안에 속한 모든 웹서버 API 함수들에서 에러 발생시
     // 대신 @ExceptionHandler(Exception.class) 붙인 handler() 함수 안의 코드 실행해줌.
@@ -219,10 +276,10 @@ public class ItemController {
 //    ResponseEntity<String> detail2(@PathVariable Long id, Model model) {
 //    // String detail(@PathVariable Long id, Model model) {
 //        try {
-//            Optional<Item> result = itemRepository.findById(id);
+//            Optional<Item> result = itemRepository.findById(id);  // 컬럼 id에 할당된 값(메서드 파라미터 변수 id)과 동일한 행(Raw)을 테이블에서 가져오기
 //            // 그래서 아래 처럼 쓰면(if (result.isPresent())) 확실하게 값이 들어있을 경우에만 .get() 해서 데이터를 안전하게 사용할 수 있다. (result.get())
 //            if (result.isPresent()) {
-//                model.addAttribute("data", result.get());
+//                model.addAttribute("data", result.get());   // html 파일에 보내고 싶은 웹서버에서보낸변수 이름 "data" , 값 result.get() 메서드 addAttribute 사용해서 집어넣기
 //                // return "detail.html";
 //            } else {
 //                // return "redirect:/list";

@@ -30,6 +30,20 @@ public class ItemService {
         itemRepository.save(item);
     }
 
+    // TODO: 글수정 기능 ItemService 함수 saveItem 구현 (2025.09.02 minjae)
+    // 참고 URL - https://claude.ai/chat/58e6617a-58e6-4f8a-a581-1f137c4ce8b0
+    // public void saveItem(Long id, String title, Integer price) {
+    public void saveItem(Item item) {
+        // new Item()으로 생성한 변수에다가 여러가지 정보(데이터)를 채운 다음에
+        // Item item = new Item();
+        // item.setId(id);
+        // item.setTitle(title);
+        // item.setPrice(price);
+
+        // 리포지토리.save() 함수 소괄호 안에 함수 파라미터로 받은 변수(item)를 넣으면 해당 변수(item)에 속한 id 값과 같은 테이블에 있는 기존 정보(데이터)를 수정해준다.
+        itemRepository.save(item);
+    }
+
     // 아이템 리스트 가져오기
     public List<Item> getItems() {
         return itemRepository.findAll();

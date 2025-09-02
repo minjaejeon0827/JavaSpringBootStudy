@@ -3222,9 +3222,132 @@ html 보내주는 기능과 관련이 없다면 서비스 레이어(Service laye
 3. 가격이 음수거나 너무 큰 경우도 예외처리를 해주자.
 강의만 쭉 들어봤자 실력 하나도 안늘으니 직접 해보도록 하자.
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 2
+20강 - 수정기능 1
 
+상품정보를 수정하는 기능을 만들어보자.
+수정기능 만드는걸 저한테 배워야 만들 수 있는게 아니라
+수정기능이 어떻게 동작하는지 한글로 자세히 설명부터 하고
+그거 그대로 코드로 번역만 하면 되니 강의 끄고 알아서 해오도록 하자.
 
+- 한글로 설명을 못하겠으면 다른 사이트 벤치마크해보고
+- 특정 부분을 코드로 번역 하는 법을 모르면 찾아보면 되고
+- 어려우면 한 번에 글 4개 수정기능 한 번에 다 만들려고 하지말고
+글 하나만 찝어서 그거 수정하는 기능부터 만들어보십쇼.
 
+* 수정기능을 글로 설명부터 해보면
+
+삶과 공부의 의지가 없는 분들은 저랑 같이 해보자.
+이것도 일종의 게시판이기 때문에 게시판 글수정 기능이 어떻게 동작하는지 설명부터 해보자면
+1. 글마다 수정버튼이 있는데 누르면 글수정 웹페이지(edit.html)로 이동
+2. 그 웹페이지엔 폼(<form>)이 있고 글의 내용이 이미 채워져있음
+3. 전송누르면 그걸로 DB의 기존 글 수정
+
+* 1. 버튼누르면 수정페이지로 이동
+
+버튼누르면 특정 웹페이지로 이동시키고 싶으면 <a href="/url"> 쓰면 된다.
+
+(list.html)
+
+<div class="card" th:each="i : ${items}">
+    <img src="https://placehold.co/300">
+    (생략)
+    <a th:href="/???">✏️</a>
+</div>
+
+글목록 웹페이지(list.html)에 a태그(<a th:href="/???">✏️</a>) 하나 만들어봤고
+해당 a태그(<a th:href="/???">✏️</a>) 누르면 글수정 웹페이지(edit.html)로 이동하게 하자.
+근데 글수정 웹페이지(edit.html) URL은 안 만들었으니 웹서버 컨트롤러(ItemController.java)에서 하나 만들어보자.
+
+(ItemController.java)
+
+@GetMapping("/edit")
+String edit() {
+  return "edit.html";
+}
+
+웹서버 컨트롤러(ItemController.java)에서 글수정 웹페이지(edit.html) 보내줄 웹서버 API 함수(edit()) 하나 만들었다.
+
+(edit.html)
+
+<form action="/???" method="POST">
+  <input name="title">
+  <input name="price">
+  <button type="submit">전송</button>
+</form>
+
+글수정 웹페이지(edit.html) html 파일도 만들었다.
+html 내용(코드)은 글작성 웹페이지(write.html)랑 똑같을거같아서 그대로 복사해옴
+
+Q. 근데 글이 4개라 글수정 웹페이지(edit.html)도 4개 필요하지 않음?
+- 맞습니다
+
+/edit/1로 접속하면 1번글 내용이 채워진 글수정 웹페이지(edit.html)
+/edit/2로 접속하면 2번글 내용이 채워진 글수정 웹페이지(edit.html)
+...
+이렇게 만들면 될 것 같은데
+웹서버 API 함수 비슷한거 여러개 만드는 뻘짓 싫으면 뭐하라고했습니까
+URL 파라미터 문법 사용하면 된다.
+
+(ItemController.java)
+
+@GetMapping("/edit/{id}")
+String edit() {
+  return "edit.html";
+}
+
+이러면 누가 /edit/1 로 접속하든 /edit/2로 접속하든 글수정 웹페이지(edit.html)를 잘 보여줄 수 있겠군요.
+
+갑자기 이런거 쓰면 복잡해서 어렵다고요?
+그럼 빡대가리 모드로 코딩해보도록 하자.
+한 번에 4개의 웹페이지와 기능을 전부 만들려고 하지 말고 1개의 기능만 먼저 만든다. 그 다음 확장하면 된다.
+1번 글의 글수정 웹페이지(edit.html)와 기능만 만들어보는 빡대가리 모드로 가보자.
+
+* 2. 그 페이지엔 폼이 있고 글 내용이 이미 채워져있음
+
+/edit/1로 접속하면 id가 1번 글의 내용이 채워져있어야한다.
+근데 접속해보면 지금은 빈칸이군요.
+그럼 DB에서 id가 1번 글 가져와서 여기다가 박아주면 되는 것 아닙니까
+
+(ItemController.java)
+
+@GetMapping("/edit/{id}")
+String edit(Model model) {
+  Optional<Item> result = itemRepository.findById(1L);
+  if (result.isPresent()) {
+    model.addAttribute("data", result.get());
+    return "edit.html";
+  } else {
+    return "redirect:/list";
+  }
+}
+
+그래서 id가 1인 글을 DB에서 가져와서 html에 넣으라고 했다.(model.addAttribute("data", result.get());)
+
+(edit.html)
+
+<form action="/???" method="POST">
+  <input name="title" th:value="${data.title}">
+  <input name="price" th:value="${data.price}">
+  <button type="submit">전송</button>
+</form>
+
+그걸 html에 박아봤다. (th:value="${data.title}" / th:value="${data.price}")
+value속성(th:value) 만지면 이미 채워진 값("${data.title}" / "${data.price}")을 맘대로 설정할 수 있다.
+나머지 3. 전송누르면 그걸로 DB를 수정하는건 알아서 해오자.
+
+오늘의 숙제 :
+수정기능을 알아서 완성해오자.
+
+힌트1. DB내용 수정은 .save() 쓰면 된다.
+.save() 안에 object 하나 넣으면 그 내용으로 행을 하나 추가해준다고 했는데
+예외가 있다.
+추가하려는 id가 이미 테이블에 존재하면 추가가 아니라 기존 내용을 덮어쓰기 해준다. (update 처리 해줌.)
+그게 수정(update)임
+
+힌트2. 서버에서 어떤 정보가 필요한데 정보가 없다면
+유저에게 보내라고하거나 DB에서 뽑아보거나 택1 하면 되겠다.
 
 
 
