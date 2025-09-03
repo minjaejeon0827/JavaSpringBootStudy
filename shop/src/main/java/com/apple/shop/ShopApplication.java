@@ -9,6 +9,10 @@
 // 코드 수정 후 재컴파일 키보드 단축키 Ctrl + F9
 // 디버그 터미널 출력창 키보드 단축키 Alt + 4 / Alt + 5 둘 중 하나 입력
 
+// * Java 공식문서 총정리
+// 참고 URL - https://velog.io/@dev-mage/java-official-documents-list
+// 참고 2 URL - https://download.java.net/java/early_access/loom/docs/api/
+
 package com.apple.shop;   // 파일 상단에 package 파일경로;(com 폴더 -> apple 폴더 -> shop 폴더) 라고 적어줘야 다른 파일에서도 여기 있던 코드를 사용가능하다.
 
 import org.springframework.boot.SpringApplication;

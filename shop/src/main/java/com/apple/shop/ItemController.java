@@ -125,7 +125,7 @@ public class ItemController {
     // (참고2) <form> 말고 ajax의 body로 전송한 데이터는 @RequestBody라는걸 써야 출력해볼 수 있는데 나중에 알아보자.
 
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
-    // CASE 1-1: 데이터 2가지만 웹서버로 들어오는 경우 (@RequestParam(name="title") String title, @RequestParam(name="price") Integer price))
+    // CASE 1-1: 데이터 2가지만 웹서버로 들어오는 경우 (@RequestParam(name="title") String title, @RequestParam(name="price") Integer price))   // @RequestParam 생략 가능
     @PostMapping("/add")
         // String writePost(String title, String price) {
     String writePost(String title, Integer price) throws Exception {  // throws Exception - Exception을 뱉어주는 웹서버 API 함수 의미
@@ -206,7 +206,8 @@ public class ItemController {
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     // URL 파라미터 문법 사용해서 비슷한 URL(/detail/어쩌구)가진 웹서버 API가 여러개 작성할 필요 없이 하나의 웹서버 API만 작성하면 된다.
     @GetMapping("/edit/{id}")
-    String edit(@PathVariable Long id, Model model) {
+    // String edit(@PathVariable Long id, Model model) {
+    String edit(Model model, @PathVariable Long id) {
       try {
         // Optional<Item> result = itemRepository.findById(id);
         // Optional<Item> result = itemService.getItemById(1L);
@@ -231,33 +232,73 @@ public class ItemController {
       }
     }
 
+    // TODO: 글수정 기능 웹서버 API 함수 editItem 구현 (2025.09.02 minjae)
+    // 참고 URL - https://claude.ai/chat/58e6617a-58e6-4f8a-a581-1f137c4ce8b0
+    // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
+    // CASE 2-1: 데이터 여러개가 웹서버로 들어오는 경우
+    // @ModelAttribute 사용해서 유저가 <input> 태그에 정보(데이터) 입력 후 웹서버 API 함수로 보낸 데이터를 @Entity 클래스 객체(object)로 쉽게 변환 처리
+    @PostMapping("/edit")
+    // String editItem(@ModelAttribute Item item) {
+    // String editItem(@RequestParam String title, @RequestParam Integer price, @RequestParam Long id) {  // @RequestParam 생략 가능
+    String editItem(String title, Integer price, Long id) {
+        try {
+            itemService.editItem(title, price, id);
+            // Item item = new Item();
+            // item.setId(1L);  // id 값 1L 하드코딩식으로 집어넣기
+            // item.setId(유저가 수정하고싶은 글번호);
+            // item.setId(id);
+            // item.setTitle(title);
+            // item.setPrice(price);
+            // itemRepository.save(item);
+            // return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+
+            // System.out.println(item);
+            // itemService.saveItem(item);
+
+            // System.out.println(item);   // ShopApplication 콘솔창(Console) 출력 결과 - Item(id=null, title=aaaa, price=1234)
+            // itemRepository.save(item);
+            // itemService.saveItem(item);
+            // return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+            // return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+            // return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+            // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+            // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+        } finally {
+            return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+        }
+    }
+
+    // TODO: 아래 주석친 테스트 코드 필요시 참고 (2025.09.03 minjae)
     // TODO: 글수정 기능 웹서버 API 함수 updatePost 구현 (2025.09.02 minjae)
     // 참고 URL - https://claude.ai/chat/58e6617a-58e6-4f8a-a581-1f137c4ce8b0
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
     // CASE 2-1: 데이터 여러개가 웹서버로 들어오는 경우
     // @ModelAttribute 사용해서 유저가 <input> 태그에 정보(데이터) 입력 후 웹서버 API 함수로 보낸 데이터를 @Entity 클래스 객체(object)로 쉽게 변환 처리
-    @PostMapping("/update")
-    // String updatePost(Long id, String title, Integer price) {
-    String updatePost(@ModelAttribute Item item) {
-      try {
-        System.out.println(item);
-        itemService.saveItem(item);
-
-        // System.out.println(item);   // ShopApplication 콘솔창(Console) 출력 결과 - Item(id=null, title=aaaa, price=1234)
-        // itemRepository.save(item);
-        // itemService.saveItem(item);
-        // return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
-
-      } catch (Exception e) {
-          System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
-          // return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
-          // return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
-          // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
-          // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
-      } finally {
-          return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
-      }
-    }
+//    @PostMapping("/update")
+//    // String updatePost(Long id, String title, Integer price) {
+//    String updatePost(@ModelAttribute Item item) {
+//      try {
+//        System.out.println(item);
+//        itemService.saveItem(item);
+//
+//        // System.out.println(item);   // ShopApplication 콘솔창(Console) 출력 결과 - Item(id=null, title=aaaa, price=1234)
+//        // itemRepository.save(item);
+//        // itemService.saveItem(item);
+//        // return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+//
+//      } catch (Exception e) {
+//          System.out.println(e.getMessage());  // 에러 원인(이유) 콘솔창 출력 (나중에 웹서버 배포 후 에러내역 기록해두려면 logging 라이브러리 추천함.)
+//          // return "redirect:/list";   // try - catch 구문에서 ajax로 웹서버와 통신하면 redirect 사용불가
+//          // return ResponseEntity.status(400).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//          // 웹페이지나 데이터 못찾는 경우 404 NOT FOUND가 적절함.
+//          // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("니잘못임");   // try - catch 구문에서 ajax로 웹서버와 통신하면 ResponseEntity 사용 가능
+//      } finally {
+//          return "redirect:/list";   // redirect:/list 이러면 특정 웹페이지(/list)로 유저를 강제 이동시킬 수 있다. (ajax로 요청하는 경우 이동불가능)
+//      }
+//    }
 
 
     // 같은 컨트롤러 클래스 (ItemController.java) 안에 속한 모든 웹서버 API 함수들에서 에러 발생시
@@ -384,14 +425,14 @@ public class ItemController {
 
     // TODO: 아래 주석친 코드 필요시 참고 (2025.08.20 minjae)
     // 웹서버 API - Thymeleaf 템플릿 엔진(Thymeleaf 문법) 사용해서 웹서버데이터를 html에 박아서 보내주는 웹서버 API
-    // CASE 1-2: 데이터 2가지만 웹서버로 들어오는 경우 (@RequestParam(name="title") String title, @RequestParam(name="price") Integer price))
+    // CASE 1-2: 데이터 2가지만 웹서버로 들어오는 경우 (@RequestParam(name="title") String title, @RequestParam(name="price") Integer price))   // @RequestParam 생략 가능
 
 //    @PostMapping("/add")   // URL 작명시 명사가 좋음.
-//    // String writePost(@RequestParam Map<String, Object> formData) {
-//    // String writePost(@RequestParam String title, @RequestParam Integer price) {
-//    // String addPost(@RequestParam String title, @RequestParam Integer price) {
+//    // String writePost(@RequestParam Map<String, Object> formData) {   // @RequestParam 생략 가능
+//    // String writePost(@RequestParam String title, @RequestParam Integer price) {   // @RequestParam 생략 가능
+//    // String addPost(@RequestParam String title, @RequestParam Integer price) {   // @RequestParam 생략 가능
 //    String writePost(@RequestParam(name="title") String title,
-//                     @RequestParam(name="price") Integer price) {
+//                     @RequestParam(name="price") Integer price) {   // @RequestParam 생략 가능
 //
 //        Item newItem = new Item();
 //        newItem.setTitle(title);
@@ -426,9 +467,9 @@ public class ItemController {
     // Map 자료형 형태로 유저가 보낸 모든 데이터 변환해줌 (@RequestParam Map<String, Object> formData)
     // Map 자료형은 여러 데이터 한 변수에 넣고 싶을 때 사용함.
 //    @PostMapping("/add")   // URL 작명시 명사가 좋음.
-//    // String writePost(@RequestParam Map<String, Object> formData) {
-//    // String writePost(@RequestParam Map formData) {
-//    String writePost(@RequestParam Map<String, Object> formData) {
+//    // String writePost(@RequestParam Map<String, Object> formData) {   // @RequestParam 생략 가능
+//    // String writePost(@RequestParam Map formData) {   // @RequestParam 생략 가능
+//    String writePost(@RequestParam Map<String, Object> formData) {  // @RequestParam 생략 가능
 //        // new Item()으로 생성한 변수에다가 여러가지 정보(데이터)를 채운 다음에
 //        Item newItem = new Item();
 //        newItem.setTitle(formData.get("title").toString());   // Map 자료형 변수 formData에서 key가 "title"인 value 값 문자열 변환(.toString()) 후 newItem.setTitle() 함수 호출

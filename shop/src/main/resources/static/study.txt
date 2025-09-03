@@ -15,6 +15,10 @@ Part 1
 * spring boot 공식 문서
 참고 URL - https://docs.spring.io/spring-boot/documentation.html
 
+* Java 공식문서 총정리
+참고 URL - https://velog.io/@dev-mage/java-official-documents-list
+참고 2 URL - https://download.java.net/java/early_access/loom/docs/api/
+
 3강 - 자바 기본 문법 1 (변수, 함수, if, for)
 4강 - 자바 기본 문법 2 (class, constructor)
 
@@ -3349,24 +3353,237 @@ value속성(th:value) 만지면 이미 채워진 값("${data.title}" / "${data.p
 힌트2. 서버에서 어떤 정보가 필요한데 정보가 없다면
 유저에게 보내라고하거나 DB에서 뽑아보거나 택1 하면 되겠다.
 
+[코딩애플] 쉽게 배우는 Spring Boot & JPA
+Part 2
+21강 - 수정기능 2 (숙제)
 
+저번시간 숙제를 해보자.
+뭔가 안풀린다고 바로 답보고 받아적고 그런건 공부가아니라 타자연습일 뿐이고
+직접 이거저거 해봐야 더 기억에 오래남는다.
 
+* 왜 항상 1번상품 내용만 채워진 페이지가 나옴?
 
+지금은 /edit/1, /edit/2 아무렇게나 접속해도 항상 글수정 웹페이지(edit.html)에는 1번 상품의 내용만 박혀있다.
+왜 그러죠?
+여러분이 코드를 그렇게 짰으니까 그럴 뿐 컴퓨터는 아무 잘못 없다.
+항상 1번상품만 꺼내서 보여주라고 코드를 짜놨겠죠 뭐
 
+(ItemController.java)
 
+@GetMapping("/edit/{id}")
+String edit(@PathVariable Long id, Model model) {
+  Optional<Item> result = itemRepository.findById(id);
+  if (result.isPresent()) {
+    model.addAttribute("data", result.get());
+    return "edit.html";
+  } else {
+    return "redirect:/list";
+  }
+}
 
+그래서 유저가 URL 파라미터자리(@GetMapping("/edit/{id}"))에 입력한 숫자(@PathVariable Long id)를
+.findById()에 넣으라고 코드짜봤다. (Optional<Item> result = itemRepository.findById(id);)
+그럼 /edit/2로 접속하면 2번 상품을 가져와서 html에 보여주겠군요.
 
+* 3. 전송누르면 그 내용으로 DB의 기존 글 수정
 
+글수정 웹페이지(edit.html) 폼(<form>)에서 전송누르면
+웹서버로 데이터 보내고 웹서버는 그 데이터(내용)로 DB를 수정 시켜보도록 하자.
 
+(edit.html)
 
+<form action="/edit" method="POST">
+  <input name="title" th:value="${data.title}">
+  <input name="price" th:value="${data.price}">
+  <button type="submit">전송</button>
+</form>
 
+전송누르면 /edit으로 POST 요청(@PostMapping("/edit")) 날리라고 해봤다.
 
+(ItemController.java)
 
+@PostMapping("/edit")
+String editItem(String title, Integer price) {
+  // 유저가 보낸 데이터(내용)로 웹서버 API 함수(editItem) 실행해서  DB수정 하기~~
+  return "redirect:/list";
+}
 
+웹서버 컨트롤러(ItemController.java) -> 웹서버 API 함수(editItem)도 만들어봤다.
 
+Q. 글 수정같은거 할 때는 PUT요청(@PutMapping("/edit"))이 좋다고 하지 않음?
+- 근데 안타깝게도 폼(<form>)태그 쓰면 PUT DELETE 요청(@PutMapping("/edit"), @DeleteMapping("/~~~~")) 그런거 못날린다.
+(폼(<form>)태그 쓰면 GET POST 요청(@GetMapping("/edit/{id}"), @PostMapping("/edit")만 가능)
+ajax기능을 쓰면 쉽게 가능한데 그건 삭제기능(@DeleteMapping("/~~~~")) 만들 때 알아보자.
 
+근데 우리는 지금 빡대가리 모드로 개발중이기 때문에
+한 번에 모든 글의 수정기능(@PostMapping("/edit"))을 만들려고 하지 말고
+1번 글을 수정하는 기능(@PostMapping("/edit")) 하나만 만들어보자.
 
+* JPA 사용해서 수정하려면
 
+글수정하고 싶으면
+- object 뽑고 (예 - Item item = new Item();)
+- object에 변수들 값을 집어넣고 (예 - item.setId(1L); / item.setTitle(title); / item.setPrice(price);)
+- 그 다음에 save 메서드 안에 object 넣으면 된다. (예 - itemRepository.save(item);)
+
+이건 테이블에 데이터 행(raw) 하나 추가하는 문법이지만 id값이 같은 행(raw)이 이미 있으면 그 행(raw)을 덮어쓰기해준다. (update)
+그게 수정임 (update)
+
+(ItemController.java)
+
+@PostMapping("/edit")
+String editItem(String title, Integer price) {
+  Item item = new Item();
+  item.setId(1L);
+  item.setTitle(title);
+  item.setPrice(price);
+  itemRepository.save(item);
+  return "redirect:/list";
+}
+
+그래서 유저가 폼(<form>)태그 사용해서 웹서버로 보낸 데이터 title, price, 1L(id 값 의미)을
+object에 넣고(item.setId(1L); item.setTitle(title); item.setPrice(price);)
+.save() 메서드 호출 해봤다. (itemRepository.save(item);)
+그럼 1번 글이 수정되지 않을까요 테스트해보자.
+
+* 다른 글도 수정하고 싶은데요
+
+근데 지금은 1번글만 수정해주는데
+2번글 수정기능(@PostMapping("/edit"))은 어떻게 만들죠?
+- 그거 해주는 웹서버 API 함수 하나 더 만들면 되겠군요.
+3번글 수정기능(@PostMapping("/edit"))은 어떻게 만들어요?
+- 그거 해주는 웹서버 API 함수 하나 더 만들면 되겠군요.
+
+비슷한 웹서버 API 함수 많이 만드는 뻘짓거리 하기 싫으면
+URL 파라미터 써도 되고 아니면 이런 방법도 있다.
+.setId(1L) 로 하드코딩 해놓는게 아니라
+.setId(유저가 수정하고 싶은 글번호)를 입력하는것이다.
+
+유저가 글수정하고 싶은 글번호는 웹서버가 어떻게 알죠?
+당연히 웹서버가 무당도 아니고 어떻게 알겠습니까.
+웹서버가 알 수 없는 정보(데이터)들은 어떻게 확인 하냐면 방법이 2개 있는데
+(1) 유저에게 웹서버로 정보(데이터) 보내라고 하거나
+(2) 웹서버가 실행되어 DB에서 정보(데이터) 뽑아보거나
+택1 하면 된다.
+(1)로 하는게 별문제 없을 것 같으면 편하고 좋음
+
+(edit.html)
+
+<form action="/edit" method="POST">
+  <input name="id" th:value="${data.id}" style="display:none">
+  <input name="title" th:value="${data.title}">
+  <input name="price" th:value="${data.price}">
+  <button type="submit">전송</button>
+</form>
+
+유저가 수정요청(@PostMapping("/edit")) 날릴 때
+수정원하는 글의 번호(th:value="${data.id}")도 여기 폼(<form>)태그 안에 집어넣어서 웹서버로 함께 데이터 보내라고 해봤다. (<input name="id" th:value="${data.id}" style="display:none">)
+근데 유저는 글 번호(th:value="${data.id}")가 뭔지 모르는 바보기 때문에
+그냥 개발자가 채워주는게 좋을 것 같다.
+data.id 하면 아마 글번호 나오겠군요. (th:value="${data.id}")
+
+(참고) <input> 안보이게 하고 싶으면 style="display:none"같은거 주면 된다.
+
+(ItemController.java)
+
+@PostMapping("/edit")
+String editItem(String title, Integer price, Long id) {
+  Item item = new Item();
+  item.setId(id);
+  item.setTitle(title);
+  item.setPrice(price);
+  itemRepository.save(item);
+  return "redirect:/list";
+}
+
+그래서 유저가 폼(<form>)태그 사용해서 웹서버로 보낸 데이터 title, price, id 값을
+object에 넣고(item.setId(id); item.setTitle(title); item.setPrice(price);)
+.save() 메서드 호출 해봤다. (itemRepository.save(item);)
+
+그럼 이제 어떤 글수정 웹페이지(edit.html)로 방문하든간에
+id 값도 잘 전송되기 때문에 웹서버로 id 값 전달이 잘 되서 글수정도 잘 되겠군요.
+진짜인지 확인해보자.
+
+오늘의 결론 :
+1. 테이블에 이미 존재하는 컬럼 id를 기입해서 .save() 메서드 호출 하면 덮어쓰기(수정) 된다. (update)
+2. 코드짤 땐 한 번에 모든걸 구현하려고 하지 말고 쉬운거 하나부터 개발하고 확장하면 쉽다.
+이런걸 초보때 알아둬야 나중에 알아서 잘함
+3. 웹서버에서 모르는 정보(데이터)는 유저에게 정보(데이터) 보내라고 하거나 DB에서 정보(데이터) 꺼내보거나 둘 중 하나 하면 된다.
+
+오늘의 숙제 :
+1. 상품마다 글수정 웹페이지(edit.html)로 이동하는 링크를 만들어보자.
+
+(list.html)
+<div class="card" th:each="i : ${items}">
+  <img src="https://placehold.co/300">
+
+  <div>
+    <!--  <h4 th:text="${i.title}">바지</h4>  -->
+    <!--  <a href="@{'/detail/' + ${i.id} }">링크</a>  -->
+    <!--  보통은 서버에서 보낸 변수를 넣고 싶으면 ${ } 안에 넣으면 되는데 근데 href 속성 안에는 Thymeleaf 템플릿 엔진 사용해서 @{ } 부터 시작하면 된다. (예) href="@{'/detail/' + ${i.id} }"  -->
+    <a th:href="@{'/detail/' + ${i.id} }">
+      <h4 th:text="${i.title}">바지</h4>
+    </a>
+    <p th:text="${i.price + '원'}">7억</p>
+    <a th:href="@{'/edit/' + ${i.id} }">✏️</a>
+  </div>
+</div>
+
+상품목록 웹페이지(list.html)에 이런 식으로 해봤다.
+
+2. Controller 기능과 별 상관없어보이는 코드는 Service 클래스로 빼보자.
+
+(ItemService.java 내부)
+
+public void editItem(String title, Integer price, Long id) {
+  Item item = new Item();
+  item.setId(id);
+  item.setTitle(title);
+  item.setPrice(price);
+  itemRepository.save(item);
+}
+
+글수정하는 코드는 Service(ItemService.java)로 옮겨서 함수(editItem)로 만들어봤다.
+앞으로 itemService.editItem(title, price, id) 쓰면 글수정이 잘 되겠군요.
+기존에 있던 saveItem()인가 그런 함수와 비슷해서 그거 재활용해도 되는데
+강박적인 코드 재활용은 코드가 더 복잡해질 수 있다.
+
+3. 글수정시 유저가 제목을 100자 이상으로 길게 쓰거나 가격란에 음수를 보냈을 때 대처하는 코드도 한번 작성해보자.
+참고 - 2번 Service(ItemService.java)에서 만든 editItem 함수안에서 "title 파라미터가 100자 이상이면 에러를 내주세요~" 이런 식으로 코드짜는게 가장 쉬운 방법입니다.
+(Service 함수)
+public void saveItem(String title, Integer price){
+    if (price < 0) {
+      throw new RuntimeException("음수 안됩니다");
+    }
+    (실행할 코드~~)
+}
+
+이런 식으로 if를 쓰거나 try, catch를 쓰거나 해서 이상한 상황에는 강제로 에러를 발생시키면 됩니다.
+참고로 Exception()은 문법상 꼭 try, catch를 강제로 사용해야 하기 때문에 귀찮아서
+일부러 에러 발생시킬 땐 RuntimeException() 이런걸 더 주로 많이 사용한다.
+그렇게 예외처리(try, catch) 사용 안해도 눈감아주는 Exception들을 unchecked Exception(RuntimeException())이라고 부른다.
+
+(ItemService.java 내부)
+
+// TODO: 글수정 기능 ItemService 함수 editItem 구현 (2025.09.02 minjae)
+// 참고 URL - https://claude.ai/chat/58e6617a-58e6-4f8a-a581-1f137c4ce8b0
+// public void editItem(Item item) {
+// public void editItem(Long id, String title, Integer price) {
+public void editItem(String title, Integer price, Long id) {
+    if(title.length() >= 100)   // 제목을 100자 이상으로 길게 쓴 경우
+        throw new RuntimeException("제목 100자 이상 초과!");
+    if(price < 0)  // 가격란에 음수 쓴 경우
+        throw new RuntimeException("음수 안됩니다");
+
+    // new Item()으로 생성한 변수에다가 여러가지 정보(데이터)를 채운 다음에
+    Item item = new Item();
+    item.setId(id);
+    item.setTitle(title);
+    item.setPrice(price);
+
+    // 리포지토리.save() 함수 소괄호 안에 함수 파라미터로 받은 변수(item)를 넣으면 해당 변수(item)에 속한 id 값과 같은 테이블에 있는 기존 정보(데이터)를 수정해준다.
+    itemRepository.save(item);
+}
 
 
 
